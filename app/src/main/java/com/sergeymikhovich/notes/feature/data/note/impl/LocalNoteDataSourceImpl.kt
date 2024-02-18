@@ -1,6 +1,5 @@
 package com.sergeymikhovich.notes.feature.data.note.impl
 
-import com.sergeymikhovich.notes.common.di.scope.ApplicationScope
 import com.sergeymikhovich.notes.feature.data.note.api.LocalNoteDataSource
 import com.sergeymikhovich.notes.feature.data.note.impl.db.NoteDao
 import com.sergeymikhovich.notes.feature.data.note.impl.db.NoteMapper
@@ -8,8 +7,10 @@ import com.sergeymikhovich.notes.feature.domain.note.api.model.NewNote
 import com.sergeymikhovich.notes.feature.domain.note.api.model.Note
 import dagger.Binds
 import dagger.Module
-import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 import javax.inject.Inject
+import javax.inject.Singleton
 
 class LocalNoteDataSourceImpl @Inject constructor(
     private val dao: NoteDao,
@@ -39,9 +40,10 @@ class LocalNoteDataSourceImpl @Inject constructor(
 }
 
 @Module
+@InstallIn(SingletonComponent::class)
 interface LocalDataSourceModule {
 
     @Binds
-    @ApplicationScope
+    @Singleton
     fun bindLocalDataSource(localNoteDataSource: LocalNoteDataSourceImpl): LocalNoteDataSource
 }

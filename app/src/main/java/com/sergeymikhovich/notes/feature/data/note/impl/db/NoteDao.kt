@@ -5,9 +5,10 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
-import com.sergeymikhovich.notes.common.di.scope.ApplicationScope
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 
 @Dao
 interface NoteDao {
@@ -29,9 +30,9 @@ interface NoteDao {
 }
 
 @Module
+@InstallIn(SingletonComponent::class)
 class NoteDaoModule {
 
     @Provides
-    @ApplicationScope
     fun provideNoteDao(database: NoteDatabase): NoteDao = database.noteDao()
 }

@@ -1,11 +1,7 @@
 package com.sergeymikhovich.notes.app
 
 import android.app.Application
-import com.sergeymikhovich.notes.common.di.component.DaggerApplicationComponent
+import dagger.hilt.android.HiltAndroidApp
 
-class App : Application() {
-
-    val appComponent by lazy {
-        DaggerApplicationComponent.factory().create(this)
-    }
-}
+@HiltAndroidApp
+class App : Application()

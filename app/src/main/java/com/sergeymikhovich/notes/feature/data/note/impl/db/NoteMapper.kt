@@ -1,11 +1,12 @@
 package com.sergeymikhovich.notes.feature.data.note.impl.db
 
-import com.sergeymikhovich.notes.common.di.scope.ApplicationScope
 import com.sergeymikhovich.notes.common.mapping.Mapper
 import com.sergeymikhovich.notes.feature.domain.note.api.model.NewNote
 import com.sergeymikhovich.notes.feature.domain.note.api.model.Note
 import dagger.Module
 import dagger.Provides
+import dagger.hilt.InstallIn
+import dagger.hilt.components.SingletonComponent
 
 class NoteMapper {
 
@@ -41,9 +42,9 @@ class NoteMapper {
 }
 
 @Module
+@InstallIn(SingletonComponent::class)
 class NoteMapperModule {
 
     @Provides
-    @ApplicationScope
     fun provideNoteMapper(): NoteMapper = NoteMapper()
 }
