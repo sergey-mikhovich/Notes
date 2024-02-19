@@ -37,7 +37,7 @@ fun NoteScreen(viewModel: NoteViewModel = hiltViewModel()) {
         val context = LocalContext.current
 
         BackHandler {
-            viewModel.saveNewNote()
+            viewModel.saveNote()
         }
         
         Note(

@@ -9,7 +9,7 @@ class DeleteNoteUseCaseImpl @Inject constructor(
     private val noteRepository: NoteRepository
 ) : DeleteNoteUseCase {
 
-    override suspend fun invoke(note: Note) {
-        noteRepository.delete(note)
+    override suspend fun invoke(id: Long) {
+        noteRepository.delete(id)
     }
 }

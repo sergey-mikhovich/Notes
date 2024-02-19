@@ -3,12 +3,13 @@ package com.sergeymikhovich.notes.feature.data.note.impl
 import com.sergeymikhovich.notes.feature.data.note.api.LocalNoteDataSource
 import com.sergeymikhovich.notes.feature.data.note.impl.db.NoteDao
 import com.sergeymikhovich.notes.feature.data.note.impl.db.NoteMapper
-import com.sergeymikhovich.notes.feature.domain.note.api.model.NewNote
 import com.sergeymikhovich.notes.feature.domain.note.api.model.Note
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -21,16 +22,22 @@ class LocalNoteDataSourceImpl @Inject constructor(
         return dao.getAll().map(mapper.entityToDomain)
     }
 
+    override fun observeAll(): Flow<List<Note>> {
+        return dao.observeAll().map { entities ->
+            entities.map(mapper.entityToDomain)
+        }
+    }
+
     override suspend fun getById(id: Long): Note? {
         return dao.getById(id)?.let(mapper.entityToDomain)
     }
 
-    override suspend fun delete(note: Note) {
-        dao.delete(mapper.domainToEntity(note))
+    override suspend fun delete(id: Long) {
+        dao.delete(id)
     }
 
-    override suspend fun add(newNote: NewNote): Note? {
-        val newNoteId = dao.add(mapper.newDomainToEntity(newNote))
+    override suspend fun add(note: Note): Note? {
+        val newNoteId = dao.add(mapper.domainToEntity(note))
         return getById(newNoteId)
     }
 

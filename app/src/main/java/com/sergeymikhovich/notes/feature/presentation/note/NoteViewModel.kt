@@ -3,9 +3,10 @@ package com.sergeymikhovich.notes.feature.presentation.note
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sergeymikhovich.notes.feature.domain.note.api.AddNewCategoryResult
+import com.sergeymikhovich.notes.feature.domain.note.api.AddNoteResult
 import com.sergeymikhovich.notes.feature.domain.note.api.AddNoteUseCase
 import com.sergeymikhovich.notes.feature.domain.note.api.GetNoteUseCase
+import com.sergeymikhovich.notes.feature.domain.note.api.UpdateNoteUseCase
 import com.sergeymikhovich.notes.feature.presentation.note.navigation.NoteDirection
 import com.sergeymikhovich.notes.feature.presentation.note.navigation.NoteRouter
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,8 +25,9 @@ data class NoteState(
 class NoteViewModel @Inject constructor(
     private val getNoteUseCase: GetNoteUseCase,
     private val addNoteUseCase: AddNoteUseCase,
+    private val updateNoteUseCase: UpdateNoteUseCase,
     private val router: NoteRouter,
-    savedStateHandle: SavedStateHandle
+    private val savedStateHandle: SavedStateHandle
 ): ViewModel(), NoteRouter by router {
 
     private val _state: MutableStateFlow<NoteState> = MutableStateFlow(NoteState())
@@ -36,15 +38,15 @@ class NoteViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            val noteId = NoteDirection.getNoteId(savedStateHandle) ?: 0L
+            val noteId = getNoteId() ?: 0L
             getNoteUseCase(noteId)?.let { note ->
                 _state.update { it.copy(title = note.title, description = note.description) }
             }
         }
     }
 
-    fun close() {
-        router.back()
+    private fun getNoteId(): Long? {
+        return NoteDirection.getNoteId(savedStateHandle)
     }
 
     fun changeTitle(title: String) {
@@ -55,16 +57,23 @@ class NoteViewModel @Inject constructor(
         _state.update { it.copy(description = description) }
     }
 
-    fun saveNewNote() {
+    fun saveNote() {
         viewModelScope.launch {
             val note = _state.value
-            when (addNoteUseCase(note.title, note.description)) {
-                AddNewCategoryResult.Success -> router.back()
-                AddNewCategoryResult.EmptyNote -> {
-                    _error.tryEmit("Empty note discarded")
-                    router.back()
+            val noteId = getNoteId() ?: 0L
+
+            if (noteId != 0L) {
+                updateNoteUseCase(noteId, note.title, note.description)
+                router.back()
+            } else {
+                when (addNoteUseCase(note.title, note.description)) {
+                    AddNoteResult.Success -> router.back()
+                    AddNoteResult.EmptyNote -> {
+                        _error.tryEmit("Empty note discarded")
+                        router.back()
+                    }
+                    AddNoteResult.FailOnAdd -> _error.tryEmit("Something went wrong while saving")
                 }
-                AddNewCategoryResult.FailOnAdd -> _error.tryEmit("Something went wrong while saving")
             }
         }
     }

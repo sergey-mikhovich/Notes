@@ -1,6 +1,8 @@
 package com.sergeymikhovich.notes.feature.presentation.notes
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -26,7 +28,6 @@ import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraphBuilder
 import com.sergeymikhovich.notes.app.ui.theme.NotesTheme
 import com.sergeymikhovich.notes.common.navigation.api.composableTo
@@ -48,7 +49,8 @@ fun NotesScreen(viewModel: NotesViewModel = hiltViewModel()) {
             Box(modifier = Modifier.fillMaxSize()) {
                 Notes(
                     notes = state.notes,
-                    onNoteClick = viewModel::onNoteClick
+                    onNoteClick = viewModel::onOpenNoteClick,
+                    onNoteLongClick = viewModel::onDeleteNoteClick
                 )
                 Box(
                     modifier = Modifier.fillMaxSize(),
@@ -83,7 +85,8 @@ fun EmptyNotes(onButtonClick: () -> Unit) {
 @Composable
 fun Notes(
     notes: List<Note>,
-    onNoteClick: (noteId: Long) -> Unit
+    onNoteClick: (noteId: Long) -> Unit,
+    onNoteLongClick: (noteId: Long) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -93,30 +96,36 @@ fun Notes(
             NoteCard(
                 title = note.title,
                 description = note.description,
-                onNoteClick = { onNoteClick(note.id) }
+                onNoteClick = { onNoteClick(note.id) },
+                onNoteLongClick = { onNoteLongClick(note.id) }
             )
         }
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun NoteCard(
     modifier: Modifier = Modifier,
     title: String,
     description: String,
-    onNoteClick: () -> Unit
+    onNoteClick: () -> Unit,
+    onNoteLongClick: () -> Unit
 ) {
     Surface(
         modifier = modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .padding(8.dp),
+            .padding(8.dp)
+            .combinedClickable(
+                onClick = onNoteClick,
+                onLongClick = onNoteLongClick
+            ),
         border = BorderStroke(
             width = 1.dp,
             color = Color.Gray
         ),
-        shape = RoundedCornerShape(16.dp),
-        onClick = onNoteClick
+        shape = RoundedCornerShape(16.dp)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(

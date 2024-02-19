@@ -9,6 +9,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface NoteDao {
@@ -16,11 +17,14 @@ interface NoteDao {
     @Query("SELECT * FROM note")
     fun getAll(): List<NoteEntity>
 
+    @Query("SELECT * FROM note")
+    fun observeAll(): Flow<List<NoteEntity>>
+
     @Query("SELECT * FROM note WHERE id = :id")
     fun getById(id: Long): NoteEntity?
 
-    @Delete
-    fun delete(note: NoteEntity)
+    @Query("DELETE FROM note WHERE id = :id")
+    fun delete(id: Long)
 
     @Insert
     fun add(note: NoteEntity): Long

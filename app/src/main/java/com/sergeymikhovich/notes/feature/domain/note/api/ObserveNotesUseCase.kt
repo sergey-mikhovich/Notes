@@ -1,7 +1,8 @@
 package com.sergeymikhovich.notes.feature.domain.note.api
 
 import com.sergeymikhovich.notes.feature.domain.note.api.model.Note
+import kotlinx.coroutines.flow.Flow
 
-interface UpdateNoteUseCase {
-    suspend operator fun invoke(id: Long, title: String, description: String)
+interface ObserveNotesUseCase {
+    operator fun invoke() : Flow<List<Note>>
 }

@@ -2,7 +2,6 @@ package com.sergeymikhovich.notes.feature.data.note.impl
 
 import com.sergeymikhovich.notes.common.di.DispatcherIO
 import com.sergeymikhovich.notes.feature.data.note.api.LocalNoteDataSource
-import com.sergeymikhovich.notes.feature.domain.note.api.model.NewNote
 import com.sergeymikhovich.notes.feature.domain.note.api.model.Note
 import com.sergeymikhovich.notes.feature.domain.repository.api.NoteRepository
 import dagger.Binds
@@ -10,6 +9,7 @@ import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -23,16 +23,18 @@ class NoteRepositoryImpl @Inject constructor(
         localNoteDataSource.getAll()
     }
 
+    override fun observeAll(): Flow<List<Note>> = localNoteDataSource.observeAll()
+
     override suspend fun getById(id: Long): Note? = withContext(context) {
         localNoteDataSource.getById(id)
     }
 
-    override suspend fun delete(note: Note) = withContext(context) {
-        localNoteDataSource.delete(note)
+    override suspend fun delete(id: Long) = withContext(context) {
+        localNoteDataSource.delete(id)
     }
 
-    override suspend fun add(newNote: NewNote): Note? = withContext(context) {
-        localNoteDataSource.add(newNote)
+    override suspend fun add(note: Note): Note? = withContext(context) {
+        localNoteDataSource.add(note)
     }
 
     override suspend fun update(note: Note) = withContext(context) {

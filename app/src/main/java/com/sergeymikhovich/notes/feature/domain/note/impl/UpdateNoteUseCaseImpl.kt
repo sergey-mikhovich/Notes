@@ -9,7 +9,7 @@ class UpdateNoteUseCaseImpl @Inject constructor(
     private val noteRepository: NoteRepository
 ) : UpdateNoteUseCase {
 
-    override suspend fun invoke(note: Note) {
-        noteRepository.update(note)
+    override suspend fun invoke(id: Long, title: String, description: String) {
+        noteRepository.update(Note(id, title, description))
     }
 }

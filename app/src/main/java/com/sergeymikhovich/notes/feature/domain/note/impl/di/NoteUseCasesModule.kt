@@ -4,11 +4,13 @@ import com.sergeymikhovich.notes.feature.domain.note.api.AddNoteUseCase
 import com.sergeymikhovich.notes.feature.domain.note.api.DeleteNoteUseCase
 import com.sergeymikhovich.notes.feature.domain.note.api.GetNoteUseCase
 import com.sergeymikhovich.notes.feature.domain.note.api.GetNotesUseCase
+import com.sergeymikhovich.notes.feature.domain.note.api.ObserveNotesUseCase
 import com.sergeymikhovich.notes.feature.domain.note.api.UpdateNoteUseCase
 import com.sergeymikhovich.notes.feature.domain.note.impl.AddNoteUseCaseImpl
 import com.sergeymikhovich.notes.feature.domain.note.impl.DeleteNoteUseCaseImpl
 import com.sergeymikhovich.notes.feature.domain.note.impl.GetNoteUseCaseImpl
 import com.sergeymikhovich.notes.feature.domain.note.impl.GetNotesUseCaseImpl
+import com.sergeymikhovich.notes.feature.domain.note.impl.ObserveNotesUseCaseImpl
 import com.sergeymikhovich.notes.feature.domain.note.impl.UpdateNoteUseCaseImpl
 import dagger.Binds
 import dagger.Module
@@ -27,6 +29,9 @@ interface NoteUseCasesModule {
 
     @Binds
     fun bindGetNotesUseCase(getNotesUseCase: GetNotesUseCaseImpl): GetNotesUseCase
+
+    @Binds
+    fun observeNotesUseCase(observeNotesUseCase: ObserveNotesUseCaseImpl): ObserveNotesUseCase
 
     @Binds
     fun bindGetNoteUseCase(getNoteUseCase: GetNoteUseCaseImpl): GetNoteUseCase
