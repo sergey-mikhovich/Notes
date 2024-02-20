@@ -85,8 +85,8 @@ fun EmptyNotes(onButtonClick: () -> Unit) {
 @Composable
 fun Notes(
     notes: List<Note>,
-    onNoteClick: (noteId: Long) -> Unit,
-    onNoteLongClick: (noteId: Long) -> Unit
+    onNoteClick: (noteId: String) -> Unit,
+    onNoteLongClick: (noteId: String) -> Unit
 ) {
     LazyColumn(
         modifier = Modifier
@@ -146,9 +146,9 @@ fun NotesPreview() {
     NotesTheme {
         Surface {
             val list = listOf(
-                Note(1, "Task", "Description"),
-                Note(2, "Task1", "Description1"),
-                Note(3, "Task3", "Description3")
+                Note("Task", "Description"),
+                Note("Task1", "Description1"),
+                Note("Task3", "Description3")
             )
             EmptyNotes {
 

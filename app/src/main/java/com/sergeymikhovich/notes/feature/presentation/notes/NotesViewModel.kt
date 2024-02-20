@@ -38,7 +38,7 @@ class NotesViewModel @Inject constructor(
         .map { NotesState(notes = it, isEmpty = it.isEmpty()) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), NotesState(isLoading = true))
 
-    fun onOpenNoteClick(noteId: Long) {
+    fun onOpenNoteClick(noteId: String) {
         router.toNote(noteId)
     }
 
@@ -46,7 +46,7 @@ class NotesViewModel @Inject constructor(
         router.toCreateNote()
     }
 
-    fun onDeleteNoteClick(noteId: Long) {
+    fun onDeleteNoteClick(noteId: String) {
         viewModelScope.launch {
             deleteNoteUseCase(noteId)
         }

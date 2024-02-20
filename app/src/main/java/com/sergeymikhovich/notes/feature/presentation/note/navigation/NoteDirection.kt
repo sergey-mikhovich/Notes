@@ -12,12 +12,12 @@ private const val KEY_NOTE_ID = "noteId"
 object NoteDirection : Direction("note") {
 
     override val route: String
-        get() = "$target/{$KEY_NOTE_ID}"
+        get() = "$target?$KEY_NOTE_ID={$KEY_NOTE_ID}"
 
     override val arguments: List<NamedNavArgument>
-        get() = listOf(navArgument(KEY_NOTE_ID) { type = NavType.LongType })
+        get() = listOf(navArgument(KEY_NOTE_ID) { type = NavType.StringType })
 
-    fun createAction(noteId: Long): NavigationAction = createNavAction("$target/${noteId}")
+    fun createAction(noteId: String = ""): NavigationAction = createNavAction("$target?$KEY_NOTE_ID=$noteId")
 
-    fun getNoteId(savedStateHandle: SavedStateHandle): Long? = savedStateHandle.get<Long>(KEY_NOTE_ID)
+    fun getNoteId(savedStateHandle: SavedStateHandle): String? = savedStateHandle.get<String>(KEY_NOTE_ID)
 }

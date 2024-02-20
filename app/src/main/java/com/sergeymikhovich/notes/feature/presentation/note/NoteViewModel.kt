@@ -38,14 +38,14 @@ class NoteViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            val noteId = getNoteId() ?: 0L
+            val noteId = getNoteId() ?: ""
             getNoteUseCase(noteId)?.let { note ->
                 _state.update { it.copy(title = note.title, description = note.description) }
             }
         }
     }
 
-    private fun getNoteId(): Long? {
+    private fun getNoteId(): String? {
         return NoteDirection.getNoteId(savedStateHandle)
     }
 
@@ -60,9 +60,9 @@ class NoteViewModel @Inject constructor(
     fun saveNote() {
         viewModelScope.launch {
             val note = _state.value
-            val noteId = getNoteId() ?: 0L
+            val noteId = getNoteId() ?: ""
 
-            if (noteId != 0L) {
+            if (noteId.isNotBlank()) {
                 updateNoteUseCase(noteId, note.title, note.description)
                 router.back()
             } else {

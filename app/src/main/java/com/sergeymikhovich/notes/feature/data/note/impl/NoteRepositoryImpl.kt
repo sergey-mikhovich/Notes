@@ -25,11 +25,11 @@ class NoteRepositoryImpl @Inject constructor(
 
     override fun observeAll(): Flow<List<Note>> = localNoteDataSource.observeAll()
 
-    override suspend fun getById(id: Long): Note? = withContext(context) {
+    override suspend fun getById(id: String): Note? = withContext(context) {
         localNoteDataSource.getById(id)
     }
 
-    override suspend fun delete(id: Long) = withContext(context) {
+    override suspend fun delete(id: String) = withContext(context) {
         localNoteDataSource.delete(id)
     }
 

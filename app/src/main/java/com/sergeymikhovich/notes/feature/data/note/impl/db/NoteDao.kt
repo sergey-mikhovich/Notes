@@ -21,13 +21,13 @@ interface NoteDao {
     fun observeAll(): Flow<List<NoteEntity>>
 
     @Query("SELECT * FROM note WHERE id = :id")
-    fun getById(id: Long): NoteEntity?
+    fun getById(id: String): NoteEntity?
 
     @Query("DELETE FROM note WHERE id = :id")
-    fun delete(id: Long)
+    fun delete(id: String)
 
     @Insert
-    fun add(note: NoteEntity): Long
+    fun add(note: NoteEntity)
 
     @Update
     fun update(note: NoteEntity)

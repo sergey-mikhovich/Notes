@@ -28,17 +28,17 @@ class LocalNoteDataSourceImpl @Inject constructor(
         }
     }
 
-    override suspend fun getById(id: Long): Note? {
+    override suspend fun getById(id: String): Note? {
         return dao.getById(id)?.let(mapper.entityToDomain)
     }
 
-    override suspend fun delete(id: Long) {
+    override suspend fun delete(id: String) {
         dao.delete(id)
     }
 
     override suspend fun add(note: Note): Note? {
-        val newNoteId = dao.add(mapper.domainToEntity(note))
-        return getById(newNoteId)
+        dao.add(mapper.domainToEntity(note))
+        return getById(note.id)
     }
 
     override suspend fun update(note: Note) {

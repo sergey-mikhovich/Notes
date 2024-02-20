@@ -9,9 +9,9 @@ interface LocalNoteDataSource {
 
     fun observeAll() : Flow<List<Note>>
 
-    suspend fun getById(id: Long) : Note?
+    suspend fun getById(id: String) : Note?
 
-    suspend fun delete(id: Long)
+    suspend fun delete(id: String)
 
     suspend fun add(note: Note): Note?
 

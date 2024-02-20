@@ -4,7 +4,7 @@ interface NotesRouter {
 
     fun back()
 
-    fun toNote(noteId: Long)
+    fun toNote(noteId: String)
 
     fun toCreateNote()
 }

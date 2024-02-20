@@ -9,7 +9,7 @@ class GetNoteUseCaseImpl @Inject constructor(
     private val noteRepository: NoteRepository
 ) : GetNoteUseCase {
 
-    override suspend fun invoke(id: Long): Note? {
+    override suspend fun invoke(id: String): Note? {
         return noteRepository.getById(id)
     }
 }

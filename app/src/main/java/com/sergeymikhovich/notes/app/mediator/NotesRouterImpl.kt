@@ -19,12 +19,12 @@ class NotesRouterImpl @Inject constructor(
         navigator.navigateUp()
     }
 
-    override fun toNote(noteId: Long) {
+    override fun toNote(noteId: String) {
         navigator.navigateTo(NoteDirection.createAction(noteId))
     }
 
     override fun toCreateNote() {
-        navigator.navigateTo(NoteDirection.createAction(0L))
+        navigator.navigateTo(NoteDirection.createAction())
     }
 }
 
