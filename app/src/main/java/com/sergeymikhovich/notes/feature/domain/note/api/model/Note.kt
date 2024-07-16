@@ -8,4 +8,6 @@ data class Note(
     val description: String
 ) {
     constructor(title: String, description: String): this(UUID.randomUUID().toString(), title, description)
+
+    fun isEmpty() = title.isEmpty() && description.isEmpty()
 }

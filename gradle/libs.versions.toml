@@ -1,6 +1,6 @@
 [versions]
 ksp = "1.9.0-1.0.12"
-agp = "8.4.0-alpha10"
+agp = "8.5.0-alpha01"
 kotlin = "1.9.0"
 core-ktx = "1.12.0"
 junit = "4.13.2"
@@ -15,12 +15,16 @@ hilt-compose = "1.1.0"
 room = "2.6.1"
 coroutines = "1.8.0"
 hamcrest = "2.2"
+mockk-version = "1.13.9"
+google-services-version = "4.4.1"
+firebase-bom = "32.8.1"
 
 [libraries]
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-test-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "androidx-test-ext-junit" }
 espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espresso-core" }
+mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk-version" }
 kotlinx-coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutines" }
 hamcrest = { group = "org.hamcrest", name = "hamcrest", version.ref = "hamcrest" }
 lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycle-version" }
@@ -28,6 +32,7 @@ lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-ru
 activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activity-compose" }
 compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "compose-bom" }
 compose-navigation = { group = "androidx.navigation", name = "navigation-compose", version.ref = "compose-nav-version" }
+material = { group = "androidx.compose.material", name = "material" }
 ui = { group = "androidx.compose.ui", name = "ui" }
 ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
 ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
@@ -38,14 +43,21 @@ material3 = { group = "androidx.compose.material3", name = "material3" }
 room = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 room-annotation-processor = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 room-ext-coroutines = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
+coroutines-core = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-core" }
+coroutines-android = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-android" }
+coroutines-play-services = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-play-services", version.ref = "coroutines" }
 hilt-android = { group = "com.google.dagger", name = "hilt-android", version.ref = "hilt" }
 hilt-android-compiler = { group = "com.google.dagger", name = "hilt-android-compiler", version.ref = "hilt" }
 hilt-compiler = { group = "androidx.hilt", name = "hilt-compiler", version.ref = "hilt-compose"}
 hilt-navigation-compose = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hilt-compose" }
+google-firebase-bom = { group = "com.google.firebase", name = "firebase-bom", version.ref = "firebase-bom" }
+google-firebase-analytics = { group = "com.google.firebase", name = "firebase-analytics-ktx" }
+google-firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore-ktx" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 hiltAndroid = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+googleServices = { id = "com.google.gms.google-services", version.ref = "google-services-version"}
 

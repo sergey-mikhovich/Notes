@@ -2,21 +2,15 @@ package com.sergeymikhovich.notes.feature.presentation.notes
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sergeymikhovich.notes.feature.domain.note.api.DeleteNoteUseCase
-import com.sergeymikhovich.notes.feature.domain.note.api.GetNoteUseCase
-import com.sergeymikhovich.notes.feature.domain.note.api.GetNotesUseCase
-import com.sergeymikhovich.notes.feature.domain.note.api.ObserveNotesUseCase
 import com.sergeymikhovich.notes.feature.domain.note.api.model.Note
+import com.sergeymikhovich.notes.feature.domain.repository.api.NoteRepository
 import com.sergeymikhovich.notes.feature.presentation.notes.navigation.NotesRouter
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onEmpty
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.transform
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -29,14 +23,19 @@ data class NotesState(
 
 @HiltViewModel
 class NotesViewModel @Inject constructor(
-    private val observeNotesUseCase: ObserveNotesUseCase,
-    private val deleteNoteUseCase: DeleteNoteUseCase,
+    private val noteRepository: NoteRepository,
     private val router: NotesRouter
 ) : ViewModel(), NotesRouter by router {
 
-    val state: StateFlow<NotesState> = observeNotesUseCase()
+    val state: StateFlow<NotesState> = noteRepository.observeAll()
         .map { NotesState(notes = it, isEmpty = it.isEmpty()) }
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(), NotesState(isLoading = true))
+
+    init {
+        viewModelScope.launch {
+            noteRepository.refresh()
+        }
+    }
 
     fun onOpenNoteClick(noteId: String) {
         router.toNote(noteId)
@@ -48,7 +47,7 @@ class NotesViewModel @Inject constructor(
 
     fun onDeleteNoteClick(noteId: String) {
         viewModelScope.launch {
-            deleteNoteUseCase(noteId)
+            noteRepository.deleteById(noteId)
         }
     }
 }

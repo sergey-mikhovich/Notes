@@ -3,10 +3,10 @@ package com.sergeymikhovich.notes.feature.presentation.note
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sergeymikhovich.notes.feature.domain.note.api.AddNoteResult
-import com.sergeymikhovich.notes.feature.domain.note.api.AddNoteUseCase
-import com.sergeymikhovich.notes.feature.domain.note.api.GetNoteUseCase
-import com.sergeymikhovich.notes.feature.domain.note.api.UpdateNoteUseCase
+import com.sergeymikhovich.notes.feature.domain.note.api.UpsertNoteResult
+import com.sergeymikhovich.notes.feature.domain.note.api.UpsertNoteUseCase
+import com.sergeymikhovich.notes.feature.domain.note.api.model.Note
+import com.sergeymikhovich.notes.feature.domain.repository.api.NoteRepository
 import com.sergeymikhovich.notes.feature.presentation.note.navigation.NoteDirection
 import com.sergeymikhovich.notes.feature.presentation.note.navigation.NoteRouter
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -23,9 +23,8 @@ data class NoteState(
 
 @HiltViewModel
 class NoteViewModel @Inject constructor(
-    private val getNoteUseCase: GetNoteUseCase,
-    private val addNoteUseCase: AddNoteUseCase,
-    private val updateNoteUseCase: UpdateNoteUseCase,
+    private val noteRepository: NoteRepository,
+    private val upsertNoteUseCase: UpsertNoteUseCase,
     private val router: NoteRouter,
     private val savedStateHandle: SavedStateHandle
 ): ViewModel(), NoteRouter by router {
@@ -39,7 +38,7 @@ class NoteViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             val noteId = getNoteId() ?: ""
-            getNoteUseCase(noteId)?.let { note ->
+            noteRepository.getById(noteId)?.let { note ->
                 _state.update { it.copy(title = note.title, description = note.description) }
             }
         }
@@ -63,16 +62,16 @@ class NoteViewModel @Inject constructor(
             val noteId = getNoteId() ?: ""
 
             if (noteId.isNotBlank()) {
-                updateNoteUseCase(noteId, note.title, note.description)
+                upsertNoteUseCase(Note(noteId, note.title, note.description))
                 router.back()
             } else {
-                when (addNoteUseCase(note.title, note.description)) {
-                    AddNoteResult.Success -> router.back()
-                    AddNoteResult.EmptyNote -> {
+                when (upsertNoteUseCase(Note(note.title, note.description))) {
+                    UpsertNoteResult.Success -> router.back()
+                    UpsertNoteResult.EmptyNote -> {
                         _error.tryEmit("Empty note discarded")
                         router.back()
                     }
-                    AddNoteResult.FailOnAdd -> _error.tryEmit("Something went wrong while saving")
+                    UpsertNoteResult.Fail -> _error.tryEmit("Something went wrong while saving")
                 }
             }
         }

@@ -92,7 +92,7 @@ fun Notes(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        items(notes) { note ->
+        items(items = notes, key = { it.id }) { note ->
             NoteCard(
                 title = note.title,
                 description = note.description,

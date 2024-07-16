@@ -5,6 +5,7 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Update
+import androidx.room.Upsert
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -24,13 +25,16 @@ interface NoteDao {
     fun getById(id: String): NoteEntity?
 
     @Query("DELETE FROM note WHERE id = :id")
-    fun delete(id: String)
+    fun deleteById(id: String)
 
-    @Insert
-    fun add(note: NoteEntity)
+    @Query("DELETE FROM note")
+    fun deleteAll()
 
-    @Update
-    fun update(note: NoteEntity)
+    @Upsert
+    fun upsert(noteEntity: NoteEntity)
+
+    @Upsert
+    fun upsertAll(noteEntities: List<NoteEntity>)
 }
 
 @Module

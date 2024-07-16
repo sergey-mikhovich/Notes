@@ -2,47 +2,46 @@ package com.sergeymikhovich.notes.feature.data.note.impl
 
 import com.sergeymikhovich.notes.feature.data.note.api.LocalNoteDataSource
 import com.sergeymikhovich.notes.feature.data.note.impl.db.NoteDao
-import com.sergeymikhovich.notes.feature.data.note.impl.db.NoteMapper
-import com.sergeymikhovich.notes.feature.domain.note.api.model.Note
+import com.sergeymikhovich.notes.feature.data.note.impl.db.NoteEntity
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
 class LocalNoteDataSourceImpl @Inject constructor(
-    private val dao: NoteDao,
-    private val mapper: NoteMapper
+    private val dao: NoteDao
 ) : LocalNoteDataSource {
 
-    override suspend fun getAll(): List<Note> {
-        return dao.getAll().map(mapper.entityToDomain)
+    override suspend fun getAll(): List<NoteEntity> {
+        return dao.getAll()
     }
 
-    override fun observeAll(): Flow<List<Note>> {
-        return dao.observeAll().map { entities ->
-            entities.map(mapper.entityToDomain)
-        }
+    override fun observeAll(): Flow<List<NoteEntity>> {
+        return dao.observeAll()
     }
 
-    override suspend fun getById(id: String): Note? {
-        return dao.getById(id)?.let(mapper.entityToDomain)
+    override suspend fun getById(id: String): NoteEntity? {
+        return dao.getById(id)
     }
 
-    override suspend fun delete(id: String) {
-        dao.delete(id)
+    override suspend fun deleteById(id: String) {
+        dao.deleteById(id)
     }
 
-    override suspend fun add(note: Note): Note? {
-        dao.add(mapper.domainToEntity(note))
-        return getById(note.id)
+    override suspend fun deleteAll() {
+        dao.deleteAll()
     }
 
-    override suspend fun update(note: Note) {
-        dao.update(mapper.domainToEntity(note))
+    override suspend fun upsert(noteEntity: NoteEntity): NoteEntity? {
+        dao.upsert(noteEntity)
+        return getById(noteEntity.id)
+    }
+
+    override suspend fun upsertAll(noteEntities: List<NoteEntity>) {
+        dao.upsertAll(noteEntities)
     }
 }
 

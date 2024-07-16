@@ -1,19 +1,21 @@
 package com.sergeymikhovich.notes.feature.data.note.api
 
-import com.sergeymikhovich.notes.feature.domain.note.api.model.Note
+import com.sergeymikhovich.notes.feature.data.note.impl.db.NoteEntity
 import kotlinx.coroutines.flow.Flow
 
 interface LocalNoteDataSource {
 
-    suspend fun getAll() : List<Note>
+    suspend fun getAll() : List<NoteEntity>
 
-    fun observeAll() : Flow<List<Note>>
+    fun observeAll() : Flow<List<NoteEntity>>
 
-    suspend fun getById(id: String) : Note?
+    suspend fun getById(id: String) : NoteEntity?
 
-    suspend fun delete(id: String)
+    suspend fun deleteById(id: String)
 
-    suspend fun add(note: Note): Note?
+    suspend fun deleteAll()
 
-    suspend fun update(note: Note)
+    suspend fun upsert(noteEntity: NoteEntity): NoteEntity?
+
+    suspend fun upsertAll(noteEntities: List<NoteEntity>)
 }
