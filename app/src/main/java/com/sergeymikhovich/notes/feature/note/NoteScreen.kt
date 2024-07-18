@@ -24,7 +24,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
 import com.sergeymikhovich.notes.app.ui.theme.NotesTheme
-import com.sergeymikhovich.notes.core.common.ui.composableTo
+import com.sergeymikhovich.notes.core.common.navigation.composableTo
 import com.sergeymikhovich.notes.feature.note.navigation.NoteDirection
 
 fun NavGraphBuilder.composeToNote() = composableTo(NoteDirection) { NoteScreen() }

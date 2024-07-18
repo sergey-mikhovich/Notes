@@ -1,4 +1,4 @@
-package com.sergeymikhovich.notes.core.common.ui
+package com.sergeymikhovich.notes.core.common.navigation
 
 import androidx.navigation.NavOptions
 import androidx.navigation.NavOptionsBuilder

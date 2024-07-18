@@ -16,7 +16,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.sergeymikhovich.notes.app.mediator.graph.composableAll
 import com.sergeymikhovich.notes.app.ui.theme.NotesTheme
-import com.sergeymikhovich.notes.core.common.ui.Navigator
+import com.sergeymikhovich.notes.core.common.navigation.Navigator
 import com.sergeymikhovich.notes.feature.notes.navigation.NotesDirection
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject

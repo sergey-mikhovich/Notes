@@ -1,4 +1,4 @@
-package com.sergeymikhovich.notes.core.common.ui
+package com.sergeymikhovich.notes.core.common.navigation
 
 import androidx.compose.animation.AnimatedContentScope
 import androidx.compose.runtime.Composable

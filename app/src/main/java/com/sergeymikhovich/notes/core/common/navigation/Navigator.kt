@@ -1,4 +1,4 @@
-package com.sergeymikhovich.notes.core.common.ui
+package com.sergeymikhovich.notes.core.common.navigation
 
 import kotlinx.coroutines.flow.SharedFlow
 

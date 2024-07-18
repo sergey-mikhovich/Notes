@@ -4,8 +4,8 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.navigation.NamedNavArgument
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
-import com.sergeymikhovich.notes.core.common.ui.Direction
-import com.sergeymikhovich.notes.core.common.ui.NavigationAction
+import com.sergeymikhovich.notes.core.common.navigation.Direction
+import com.sergeymikhovich.notes.core.common.navigation.NavigationAction
 
 private const val KEY_NOTE_ID = "noteId"
 
