@@ -1,17 +1,5 @@
 package com.sergeymikhovich.notes.feature.data.note.impl
 
-import com.sergeymikhovich.notes.feature.domain.note.api.model.Note
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.test.UnconfinedTestDispatcher
-import kotlinx.coroutines.test.runTest
-import org.hamcrest.MatcherAssert.assertThat
-import org.hamcrest.Matchers.hasItem
-import org.hamcrest.Matchers.not
-import org.hamcrest.core.IsEqual
-import org.junit.Before
-import org.junit.Test
-
 //@OptIn(ExperimentalCoroutinesApi::class)
 //class NoteRepositoryImplTest {
 //

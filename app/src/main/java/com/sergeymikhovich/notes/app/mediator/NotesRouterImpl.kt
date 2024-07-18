@@ -1,10 +1,9 @@
 package com.sergeymikhovich.notes.app.mediator
 
-import android.util.Log
-import com.sergeymikhovich.notes.common.navigation.api.Navigator
-import com.sergeymikhovich.notes.feature.presentation.note.navigation.NoteDirection
-import com.sergeymikhovich.notes.feature.presentation.notes.navigation.NotesDirection
-import com.sergeymikhovich.notes.feature.presentation.notes.navigation.NotesRouter
+import com.sergeymikhovich.notes.core.common.ui.Navigator
+import com.sergeymikhovich.notes.feature.note.navigation.NoteDirection
+import com.sergeymikhovich.notes.feature.note.navigation.NoteRouter
+import com.sergeymikhovich.notes.feature.notes.navigation.NotesRouter
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -26,12 +25,4 @@ class NotesRouterImpl @Inject constructor(
     override fun toCreateNote() {
         navigator.navigateTo(NoteDirection.createAction())
     }
-}
-
-@Module
-@InstallIn(ViewModelComponent::class)
-interface NotesRouterModule {
-
-    @Binds
-    fun bindNotesRouter(notesRouter: NotesRouterImpl): NotesRouter
 }
