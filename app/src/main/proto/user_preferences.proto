@@ -1,8 +1,8 @@
-syntax = "proto3";
-
-option java_package = "com.sergeymikhovich.notes.core.datastore";
-option java_multiple_files = true;
-
-message UserPreferences {
-  int32 changeListVersion = 1;
-}
+//syntax = "proto3";
+//
+//option java_package = "com.sergeymikhovich.notes.core.datastore";
+//option java_multiple_files = true;
+//
+//message UserPreferences {
+//  int64 lastNotesSyncTime = 1;
+//}

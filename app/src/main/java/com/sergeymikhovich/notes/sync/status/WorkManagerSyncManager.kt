@@ -4,23 +4,16 @@ import android.content.Context
 import androidx.work.ExistingWorkPolicy
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
-import com.google.firebase.ktx.Firebase
 import com.sergeymikhovich.notes.core.data.SyncManager
 import com.sergeymikhovich.notes.sync.initializers.SYNC_WORK_NAME
 import com.sergeymikhovich.notes.sync.workers.SyncWorker
-import dagger.Binds
-import dagger.Module
-import dagger.Provides
-import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
-import dagger.hilt.components.SingletonComponent
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.conflate
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
-import javax.inject.Singleton
 
-internal class WorkManagerSyncManager @Inject constructor(
+class WorkManagerSyncManager @Inject constructor(
     @ApplicationContext private val context: Context
 ): SyncManager {
 

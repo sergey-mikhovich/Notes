@@ -7,8 +7,7 @@ data class NetworkNote(
 ) {
 
     companion object {
-        const val COLLECTION_NAME = "Notes"
-
+        const val COLLECTION_NAME = "notes"
         const val ID = "id"
         const val TITLE = "title"
         const val DESCRIPTION = "description"

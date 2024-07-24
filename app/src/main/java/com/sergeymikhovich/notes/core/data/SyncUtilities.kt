@@ -1,15 +1,12 @@
 package com.sergeymikhovich.notes.core.data
 
 import android.util.Log
-import com.sergeymikhovich.notes.core.datastore.ChangeListVersions
-import com.sergeymikhovich.notes.core.network.model.NetworkChangeList
+import com.sergeymikhovich.notes.core.database.model.ChangeNoteEntity
+import com.sergeymikhovich.notes.core.model.ChangeNote
+import com.sergeymikhovich.notes.core.network.model.NetworkChangeNote
 import kotlin.coroutines.cancellation.CancellationException
 
 interface Syncronizer {
-    suspend fun getChangeListVersions(): ChangeListVersions
-
-    suspend fun updateChangeListVersions(update: ChangeListVersions.() -> ChangeListVersions)
-
     suspend fun Syncable.sync() = this@sync.syncWith(this@Syncronizer)
 }
 
@@ -31,25 +28,40 @@ private suspend fun <T> suspendRunCatching(block: suspend () -> T): Result<T> = 
 }
 
 suspend fun Syncronizer.changeListSync(
-    versionReader: (ChangeListVersions) -> Int,
-    changeListFetcher: suspend (Int) -> List<NetworkChangeList>,
-    versionUpdater: ChangeListVersions.(Int) -> ChangeListVersions,
-    modelDeleter: suspend (List<String>) -> Unit,
-    modelUpdater: suspend (List<String>) -> Unit
+    localSyncTimeReader: suspend () -> Long,
+    remoteSyncTimeReader: suspend () -> Long,
+    localChangeListFetcher: suspend (Long) -> List<ChangeNote>,
+    remoteChangeListFetcher: suspend (Long) -> List<ChangeNote>,
+    localModelDeleter: suspend (List<String>) -> Unit,
+    remoteModelDeleter: suspend (List<String>) -> Unit,
+    localModelUpdater: suspend (List<String>) -> Unit,
+    remoteModelUpdater: suspend (List<String>) -> Unit,
+    localChangeListUpdater: suspend (Long) -> Unit,
+    remoteChangeListUpdater: suspend (Long) -> Unit
 ) = suspendRunCatching {
 
-    val currentVersion = versionReader(getChangeListVersions())
-    val changeList = changeListFetcher(currentVersion)
+    val lastLocalSyncTime = localSyncTimeReader()
+    val lastRemoteSyncTime = remoteSyncTimeReader()
+
+    val syncWithRemote = lastRemoteSyncTime > lastLocalSyncTime
+
+    val changeList =
+        if (syncWithRemote)
+            remoteChangeListFetcher(lastLocalSyncTime)
+        else
+            localChangeListFetcher(lastRemoteSyncTime)
+
     if (changeList.isEmpty()) return@suspendRunCatching
 
-    val (deleted, updated) = changeList.partition(NetworkChangeList::isDelete)
+    val (deleted, updated) = changeList.partition(ChangeNote::deleted)
 
-    modelDeleter(deleted.map(NetworkChangeList::id))
-    modelUpdater(updated.map(NetworkChangeList::id))
-
-    val latestVersion = changeList.last().changeListVersion
-
-    updateChangeListVersions{
-        versionUpdater(latestVersion)
+    if (syncWithRemote) {
+        localModelDeleter(deleted.map(ChangeNote::id))
+        localModelUpdater(updated.map(ChangeNote::id))
+        localChangeListUpdater(lastLocalSyncTime)
+    } else {
+        remoteModelDeleter(deleted.map(ChangeNote::id))
+        remoteModelUpdater(updated.map(ChangeNote::id))
+        remoteChangeListUpdater(lastRemoteSyncTime)
     }
 }.isSuccess

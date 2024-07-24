@@ -1,13 +1,16 @@
 package com.sergeymikhovich.notes.core.data.mapper
 
 import com.sergeymikhovich.notes.core.common.mapping.Mapper
+import com.sergeymikhovich.notes.core.database.model.ChangeNoteEntity
 import com.sergeymikhovich.notes.core.database.model.NoteEntity
+import com.sergeymikhovich.notes.core.model.ChangeNote
 import com.sergeymikhovich.notes.core.model.Note
+import com.sergeymikhovich.notes.core.network.model.NetworkChangeNote
 import com.sergeymikhovich.notes.core.network.model.NetworkNote
 
 class NoteMapper {
 
-    val entityToDomain by lazy {
+    val entityToDomainNote by lazy {
         Mapper<NoteEntity, Note> { entity ->
             Note(
                 id = entity.id,
@@ -17,7 +20,7 @@ class NoteMapper {
         }
     }
 
-    val domainToEntity by lazy {
+    val domainToEntityNote by lazy {
         Mapper<Note, NoteEntity> { domain ->
             NoteEntity(
                 id = domain.id,
@@ -27,32 +30,62 @@ class NoteMapper {
         }
     }
 
-    val networkFirebaseToDomain by lazy {
-        Mapper<NetworkNote, Note> { network ->
-            Note(
-                id = network.id,
-                title = network.title,
-                description = network.description
-            )
-        }
-    }
-
-    val domainToNetworkFirebase by lazy {
-        Mapper<Note, NetworkNote> { domain ->
-            NetworkNote(
-                id = domain.id,
-                title = domain.title,
-                description = domain.description
-            )
-        }
-    }
-
-    val networkFirebaseToEntity by lazy {
+    val networkToEntityNote by lazy {
         Mapper<NetworkNote, NoteEntity> { network ->
             NoteEntity(
                 id = network.id,
                 title = network.title,
                 description = network.description
+            )
+        }
+    }
+
+    val entityToNetworkNote by lazy {
+        Mapper<NoteEntity, NetworkNote> { entiry ->
+            NetworkNote(
+                id = entiry.id,
+                title = entiry.title,
+                description = entiry.description
+            )
+        }
+    }
+
+    val entityToDomainChangeNote by lazy {
+        Mapper<ChangeNoteEntity, ChangeNote> { entity ->
+            ChangeNote(
+                id = entity.id,
+                lastModifiedTime = entity.lastModifiedTime,
+                deleted = entity.deleted
+            )
+        }
+    }
+
+    val entityToNetworkChangeNote by lazy {
+        Mapper<ChangeNoteEntity, NetworkChangeNote> { entity ->
+            NetworkChangeNote(
+                id = entity.id,
+                lastModifiedTime = entity.lastModifiedTime,
+                deleted = entity.deleted
+            )
+        }
+    }
+
+    val networkToDomainChangeNote by lazy {
+        Mapper<NetworkChangeNote, ChangeNote> { network ->
+            ChangeNote(
+                id = network.id,
+                lastModifiedTime = network.lastModifiedTime,
+                deleted = network.deleted
+            )
+        }
+    }
+
+    val networkToEntityChangeNote by lazy {
+        Mapper<NetworkChangeNote, ChangeNoteEntity> { network ->
+            ChangeNoteEntity(
+                id = network.id,
+                lastModifiedTime = network.lastModifiedTime,
+                deleted = network.deleted
             )
         }
     }

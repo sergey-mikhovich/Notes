@@ -1,6 +1,7 @@
 package com.sergeymikhovich.notes.core.database.di
 
 import com.sergeymikhovich.notes.core.database.AppDatabase
+import com.sergeymikhovich.notes.core.database.dao.ChangeNoteDao
 import com.sergeymikhovich.notes.core.database.dao.NoteDao
 import dagger.Module
 import dagger.Provides
@@ -15,4 +16,9 @@ class DaosModule {
     fun providesNoteDao(
         database: AppDatabase
     ): NoteDao = database.noteDao()
+
+    @Provides
+    fun providesChangeNoteDao(
+        database: AppDatabase
+    ): ChangeNoteDao = database.changeNote()
 }

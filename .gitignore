@@ -8,6 +8,8 @@
 /.idea/workspace.xml
 /.idea/navEditor.xml
 /.idea/assetWizardSettings.xml
+/node_modules
+/.firebaserc
 .DS_Store
 /build
 /captures

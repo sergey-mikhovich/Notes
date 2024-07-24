@@ -12,16 +12,16 @@ interface NoteDao {
     @Query("SELECT * FROM note")
     fun observeAll(): Flow<List<NoteEntity>>
 
+    @Query("SELECT * FROM note WHERE id IN (:ids)")
+    fun getByIds(ids: List<String>): List<NoteEntity>
+
     @Query("SELECT * FROM note WHERE id = :id")
     fun getById(id: String): NoteEntity?
 
     @Query("DELETE FROM note WHERE id = :id")
     fun deleteById(id: String)
 
-    @Query("DELETE FROM note")
-    fun deleteAll()
-
-    @Query("DELETE FROM note where id in (:ids)")
+    @Query("DELETE FROM note WHERE id IN (:ids)")
     fun deleteByIds(ids: List<String>)
 
     @Upsert
