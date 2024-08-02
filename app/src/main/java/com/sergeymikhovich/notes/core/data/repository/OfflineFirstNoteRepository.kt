@@ -36,15 +36,14 @@ class OfflineFirstNoteRepository @Inject constructor(
 
     init {
         scope.launch {
-            remoteSyncListenter()
+            remoteSyncListener()
         }
     }
 
-    private suspend fun remoteSyncListenter() {
+    private suspend fun remoteSyncListener() {
         networkNoteDataSource
             .observeAll()
             .collect {
-                Log.i("OfflineFirstNoteR", "requestSync: ")
                 syncManager.requestSync()
             }
     }
