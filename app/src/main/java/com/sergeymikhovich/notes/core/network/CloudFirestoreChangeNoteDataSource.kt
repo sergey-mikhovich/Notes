@@ -1,20 +1,18 @@
 package com.sergeymikhovich.notes.core.network
 
-import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.Query
+import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.toObject
+import com.google.firebase.ktx.Firebase
 import com.sergeymikhovich.notes.core.network.model.NetworkChangeNote
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
-class CloudFirestoreChangeNoteDataSource @Inject constructor(
-    private val firestore: FirebaseFirestore
-): NetworkChangeNoteDataSource {
-
-
+class CloudFirestoreChangeNoteDataSource @Inject constructor(): NetworkChangeNoteDataSource {
 
     override suspend fun getChangeNotesAfter(time: Long): List<NetworkChangeNote> {
-        val querySnapshot = firestore
+        val querySnapshot = Firebase.firestore
             .collection(NetworkChangeNote.COLLECTION_NAME)
             .whereGreaterThan(NetworkChangeNote.LAST_MODIFIED_TIME, time)
             .get()
@@ -23,18 +21,15 @@ class CloudFirestoreChangeNoteDataSource @Inject constructor(
         return querySnapshot.map { it.toObject<NetworkChangeNote>() }
     }
 
-    override suspend fun getLastChangeNote(): NetworkChangeNote {
-        val querySnapshot = firestore
+    override suspend fun getLastChangeNote(): NetworkChangeNote? {
+        val querySnapshot = Firebase.firestore
             .collection(NetworkChangeNote.COLLECTION_NAME)
             .orderBy(NetworkChangeNote.LAST_MODIFIED_TIME, Query.Direction.DESCENDING)
             .limit(1)
             .get()
             .await()
 
-        return querySnapshot
-            .map { it.toObject<NetworkChangeNote>() }
-            .lastOrNull()
-            ?: NetworkChangeNote()
+        return querySnapshot.map { it.toObject<NetworkChangeNote>() }.lastOrNull()
     }
 
     override suspend fun upsert(networkChangeNote: NetworkChangeNote) {
@@ -44,15 +39,28 @@ class CloudFirestoreChangeNoteDataSource @Inject constructor(
             NetworkChangeNote.DELETED to networkChangeNote.deleted
         )
 
-        firestore
-            .collection(NetworkChangeNote.COLLECTION_NAME)
-            .document(networkChangeNote.id)
-            .set(changeNote)
+//        Firebase.firestore
+//            .collection(NetworkChangeNote.COLLECTION_NAME)
+//            .whereEqualTo(NetworkChangeNote.USER_ID, Firebase.auth.getCurrentUserId())
+//            .whereEqualTo(NetworkChangeNote.ID, networkChangeNote.id)
+//            .get()
+//            .continueWith { snapshotTask ->
+//                if (snapshotTask.result.isEmpty) {
+                    Firebase.firestore
+                        .collection(NetworkChangeNote.COLLECTION_NAME)
+                        .document(networkChangeNote.id)
+                        .set(changeNote)
+//                } else {
+//                    snapshotTask.result.forEach { snapshot ->
+//                        snapshot.reference.set(changeNote)
+//                    }
+//                }
+//            }
             .await()
     }
 
     override suspend fun upsertAll(networkChangeNotes: List<NetworkChangeNote>) {
-        firestore.runBatch { batch ->
+        Firebase.firestore.runBatch { writeBatch ->
             for (networkChangeNote in networkChangeNotes) {
                 val changeNote = hashMapOf(
                     NetworkChangeNote.ID to networkChangeNote.id,
@@ -60,12 +68,25 @@ class CloudFirestoreChangeNoteDataSource @Inject constructor(
                     NetworkChangeNote.DELETED to networkChangeNote.deleted
                 )
 
-                batch.set(
-                    firestore
-                        .collection(NetworkChangeNote.COLLECTION_NAME)
-                        .document(networkChangeNote.id),
-                    changeNote
-                )
+//                Firebase.firestore
+//                    .collection(NetworkChangeNote.COLLECTION_NAME)
+//                    .whereEqualTo(NetworkChangeNote.USER_ID, Firebase.auth.getCurrentUserId())
+//                    .whereEqualTo(NetworkChangeNote.ID, networkChangeNote.id)
+//                    .get()
+//                    .continueWith { snapshotTask ->
+//                        if (snapshotTask.result.isEmpty) {
+                            writeBatch.set(
+                                Firebase.firestore
+                                    .collection(NetworkChangeNote.COLLECTION_NAME)
+                                    .document(networkChangeNote.id),
+                                changeNote
+                            )
+//                        } else {
+//                            snapshotTask.result.forEach { snapshot ->
+//                                writeBatch.set(snapshot.reference, changeNote)
+//                            }
+//                        }
+//                    }
             }
         }.await()
     }

@@ -63,13 +63,13 @@ class NoteViewModel @Inject constructor(
 
             if (noteId.isNotBlank()) {
                 upsertNoteUseCase(Note(noteId, note.title, note.description))
-                router.back()
+                back()
             } else {
                 when (upsertNoteUseCase(Note(note.title, note.description))) {
-                    UpsertNoteResult.Success -> router.back()
+                    UpsertNoteResult.Success -> back()
                     UpsertNoteResult.EmptyNote -> {
                         _error.tryEmit("Empty note discarded")
-                        router.back()
+                        back()
                     }
                     UpsertNoteResult.Fail -> _error.tryEmit("Something went wrong while saving")
                 }

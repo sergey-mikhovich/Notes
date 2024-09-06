@@ -6,6 +6,7 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -13,14 +14,23 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
+import androidx.compose.material.Button
+import androidx.compose.material.FloatingActionButton
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.Scaffold
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
+import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.TextUnit
@@ -29,7 +39,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
+import com.sergeymikhovich.notes.R
 import com.sergeymikhovich.notes.app.ui.theme.NotesTheme
+import com.sergeymikhovich.notes.app.ui.theme.Purple40
 import com.sergeymikhovich.notes.core.common.navigation.composableTo
 import com.sergeymikhovich.notes.core.model.Note
 import com.sergeymikhovich.notes.feature.notes.navigation.NotesDirection
@@ -39,32 +51,80 @@ fun NavGraphBuilder.composableToNotes() = composableTo(NotesDirection) { NotesSc
 @Composable
 fun NotesScreen(viewModel: NotesViewModel = hiltViewModel()) {
     NotesTheme {
-        val state by viewModel.state.collectAsStateWithLifecycle()
-
-        if (state.isEmpty) {
-            EmptyNotes(
-                onButtonClick = viewModel::onCreateNoteClick
-            )
-        } else {
-            Box(modifier = Modifier.fillMaxSize()) {
-                Notes(
-                    notes = state.notes,
-                    onNoteClick = viewModel::onOpenNoteClick,
-                    onNoteLongClick = viewModel::onDeleteNoteClick
-                )
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.BottomEnd
+        Scaffold(
+            floatingActionButton = {
+                FloatingActionButton(
+                    onClick = viewModel::toCreateNote,
+                    modifier = Modifier.padding(16.dp),
+                    backgroundColor = Purple40,
+                    shape = RoundedCornerShape(16.dp)
                 ) {
-                    Button(
-                        modifier = Modifier.padding(16.dp),
-                        onClick =  viewModel::onCreateNoteClick
-                    ) {
-                        Text(text = "Add note")
+                    Icon(Icons.Filled.Add, "Add", tint = Color.White)
+                }
+            }
+        ) { paddingValues ->
+            val state by viewModel.state.collectAsStateWithLifecycle()
+
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+                TopAppBar(
+                    title = { Text(text = stringResource(id = R.string.app_name)) },
+                    actions = {
+                        IconButton(onClick = viewModel::toAccountCenter) {
+                            Icon(Icons.Filled.Person, "Account center")
+                        }
+                    }
+                )
+                
+                Spacer(modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp))
+
+                if (state.isEmpty) {
+                    EmptyNotes(onButtonClick = viewModel::toCreateNote)
+                } else {
+                    Column(modifier = Modifier.fillMaxSize()) {
+                        Notes(
+                            notes = state.notes,
+                            onNoteClick = viewModel::toNote,
+                            onNoteLongClick = viewModel::onDeleteNoteClick
+                        )
                     }
                 }
             }
         }
+
+
+
+
+//        val state by viewModel.state.collectAsStateWithLifecycle()
+//
+//        if (state.isEmpty) {
+//            EmptyNotes(
+//                onButtonClick = viewModel::toCreateNote
+//            )
+//        } else {
+//            Box(modifier = Modifier.fillMaxSize()) {
+//                Notes(
+//                    notes = state.notes,
+//                    onNoteClick = viewModel::toNote,
+//                    onNoteLongClick = viewModel::onDeleteNoteClick
+//                )
+//                Box(
+//                    modifier = Modifier.fillMaxSize(),
+//                    contentAlignment = Alignment.BottomEnd
+//                ) {
+//                    Button(
+//                        modifier = Modifier.padding(16.dp),
+//                        onClick =  viewModel::toCreateNote
+//                    ) {
+//                        Text(text = "Add note")
+//                    }
+//                }
+//            }
+//        }
     }
 }
 
@@ -116,7 +176,7 @@ fun NoteCard(
         modifier = modifier
             .fillMaxWidth()
             .wrapContentHeight()
-            .padding(8.dp)
+            .padding(8.dp, 0.dp, 8.dp, 8.dp)
             .combinedClickable(
                 onClick = onNoteClick,
                 onLongClick = onNoteLongClick

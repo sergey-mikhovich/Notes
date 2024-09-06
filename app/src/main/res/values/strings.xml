@@ -3,4 +3,25 @@
     <string name="sync_work_notification_title">@string/app_name</string>
     <string name="sync_work_notification_channel_name">Sync</string>
     <string name="sync_work_notification_channel_description">Background tasks for Notes</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="confirm_password">Confirm password</string>
+    <string name="sign_in">Sign in</string>
+    <string name="sign_in_with_google">Sign in with Google</string>
+    <string name="sign_up">Sign up</string>
+    <string name="sign_up_description">Don\'t have an account? Click here to Sign Up!</string>
+    <string name="sign_up_with_google">Sign up with Google</string>
+    <string name="sign_out">Sign out</string>
+    <string name="sign_out_title">Sign out?</string>
+    <string name="sign_out_description">You will have to sign in again to see your notes.</string>
+    <string name="delete_account">Delete account</string>
+    <string name="delete_account_title">Delete account?</string>
+    <string name="delete_account_description">You will lose all your notes and your account will be deleted. This action is irreversible.</string>
+    <string name="cancel">Cancel</string>
+    <string name="account_center">Account center</string>
+    <string name="profile_email">Email: %1$s</string>
+    <string name="profile_uid">UID: %1$s</string>
+    <string name="profile_provider">Account provider: %1$s</string>
+    <string name="or">or</string>
+    <string name="web_client_id">385767106267-d8dg3omk4ffmb7hrec4rojnukqrbuqsd.apps.googleusercontent.com</string>
 </resources>

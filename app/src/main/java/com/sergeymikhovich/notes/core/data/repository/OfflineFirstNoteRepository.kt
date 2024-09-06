@@ -88,7 +88,7 @@ class OfflineFirstNoteRepository @Inject constructor(
                 mapper.entityToDomainChangeNote(lastChangeNote).lastModifiedTime
             },
             remoteSyncTimeReader = {
-                val lastChangeNote = networkChangeNoteDataSource.getLastChangeNote()
+                val lastChangeNote = networkChangeNoteDataSource.getLastChangeNote() ?: return@changeListSync -1
                 mapper.networkToDomainChangeNote(lastChangeNote).lastModifiedTime
             },
             localChangeListFetcher = { currentVersion ->

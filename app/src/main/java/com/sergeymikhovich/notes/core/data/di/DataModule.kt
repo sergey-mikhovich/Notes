@@ -1,6 +1,9 @@
 package com.sergeymikhovich.notes.core.data.di
 
+import com.sergeymikhovich.notes.core.data.mapper.AccountMapper
 import com.sergeymikhovich.notes.core.data.mapper.NoteMapper
+import com.sergeymikhovich.notes.core.data.repository.AccountRepository
+import com.sergeymikhovich.notes.core.data.repository.FirebaseAccountRepository
 import com.sergeymikhovich.notes.core.data.repository.NoteRepository
 import com.sergeymikhovich.notes.core.data.repository.OfflineFirstNoteRepository
 import dagger.Binds
@@ -14,11 +17,17 @@ import dagger.hilt.components.SingletonComponent
 interface NoteRepositoryModule {
 
     @Binds
-    fun bindsRepository(repository: OfflineFirstNoteRepository): NoteRepository
+    fun bindsNoteRepository(repository: OfflineFirstNoteRepository): NoteRepository
+
+    @Binds
+    fun bindsAccountRepository(repository: FirebaseAccountRepository): AccountRepository
 
     companion object {
 
         @Provides
-        fun provideNoteMapper(): NoteMapper = NoteMapper()
+        fun providesNoteMapper(): NoteMapper = NoteMapper()
+
+        @Provides
+        fun providesAccountMapper(): AccountMapper = AccountMapper()
     }
 }

@@ -17,7 +17,7 @@ import androidx.navigation.compose.rememberNavController
 import com.sergeymikhovich.notes.app.mediator.graph.composableAll
 import com.sergeymikhovich.notes.app.ui.theme.NotesTheme
 import com.sergeymikhovich.notes.core.common.navigation.Navigator
-import com.sergeymikhovich.notes.feature.notes.navigation.NotesDirection
+import com.sergeymikhovich.notes.feature.splash.navigation.SplashDirection
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -54,7 +54,7 @@ class MainActivity : ComponentActivity() {
                 ) {
                     NavHost(
                         navController = navController,
-                        startDestination = NotesDirection.route,
+                        startDestination = SplashDirection.route,
                         builder = NavGraphBuilder::composableAll
                     )
                 }

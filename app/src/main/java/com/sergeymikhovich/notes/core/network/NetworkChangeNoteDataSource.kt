@@ -6,7 +6,7 @@ interface NetworkChangeNoteDataSource {
 
     suspend fun getChangeNotesAfter(time: Long): List<NetworkChangeNote>
 
-    suspend fun getLastChangeNote(): NetworkChangeNote
+    suspend fun getLastChangeNote(): NetworkChangeNote?
 
     suspend fun upsert(networkChangeNote: NetworkChangeNote)
 

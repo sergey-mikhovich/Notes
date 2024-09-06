@@ -7,4 +7,6 @@ interface NotesRouter {
     fun toNote(noteId: String)
 
     fun toCreateNote()
+
+    fun toAccountCenter()
 }

@@ -17,9 +17,7 @@ object NoteDirection : Direction("note") {
     override val arguments: List<NamedNavArgument>
         get() = listOf(navArgument(KEY_NOTE_ID) { type = NavType.StringType })
 
-    fun createAction(noteId: String = ""): NavigationAction = createNavAction("$target?$KEY_NOTE_ID=$noteId")
+    fun createActionWithId(noteId: String = ""): NavigationAction = createNavAction("$target?$KEY_NOTE_ID=$noteId")
 
-    fun getNoteId(savedStateHandle: SavedStateHandle): String? = savedStateHandle.get<String>(
-        KEY_NOTE_ID
-    )
+    fun getNoteId(savedStateHandle: SavedStateHandle): String? = savedStateHandle.get<String>(KEY_NOTE_ID)
 }
