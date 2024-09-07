@@ -3,9 +3,9 @@
     <string name="sync_work_notification_title">@string/app_name</string>
     <string name="sync_work_notification_channel_name">Sync</string>
     <string name="sync_work_notification_channel_description">Background tasks for Notes</string>
-    <string name="email">Email</string>
+    <string name="email">Email Address</string>
     <string name="password">Password</string>
-    <string name="confirm_password">Confirm password</string>
+    <string name="confirm_password">Confirm Password</string>
     <string name="sign_in">Sign in</string>
     <string name="sign_in_with_google">Sign in with Google</string>
     <string name="sign_up">Sign up</string>
