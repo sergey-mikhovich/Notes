@@ -83,7 +83,8 @@ fun AuthenticationButton(
         Text(
             text = stringResource(buttonText),
             fontSize = 16.sp,
-            modifier = Modifier.padding(0.dp, 6.dp)
+            modifier = Modifier.padding(0.dp, 6.dp),
+            color = Color(0xFF403B36)
         )
     }
 }

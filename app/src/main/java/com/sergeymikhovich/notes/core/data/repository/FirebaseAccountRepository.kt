@@ -29,7 +29,7 @@ class FirebaseAccountRepository @Inject constructor(
     @ApplicationScope scope: CoroutineScope
 ): AccountRepository {
 
-    override fun observeCurrentUser(): Flow<User?> =
+    override fun observeCurrentUser(): Flow<User> =
         callbackFlow {
             val listener = FirebaseAuth.AuthStateListener { auth ->
                 trySend(accountMapper.firebaseToDomainUser(auth.currentUser))

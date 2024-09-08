@@ -4,7 +4,7 @@ import com.sergeymikhovich.notes.core.model.User
 import kotlinx.coroutines.flow.Flow
 
 interface AccountRepository {
-    fun observeCurrentUser(): Flow<User?>
+    fun observeCurrentUser(): Flow<User>
     fun hasUser(): Boolean
     fun getUserProfile(): User
     suspend fun createAnonymousAccount()

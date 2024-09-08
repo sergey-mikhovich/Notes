@@ -1,37 +1,43 @@
 package com.sergeymikhovich.notes.feature.auth.account_center
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.AlertDialog
-import androidx.compose.material.Button
-import androidx.compose.material.Card
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.Divider
 import androidx.compose.material.Icon
-import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.automirrored.sharp.KeyboardArrowRight
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Face
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.unit.TextUnitType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
+import coil.compose.AsyncImage
 import com.sergeymikhovich.notes.R
 import com.sergeymikhovich.notes.core.common.navigation.composableTo
 import com.sergeymikhovich.notes.core.model.User
@@ -45,151 +51,317 @@ fun AccountCenterScreen(
 ) {
     val user by viewModel.user.collectAsStateWithLifecycle()
 
-    Scaffold { paddingValues ->
+    AccountCenterContent(
+        user = user,
+        onSignInClick = viewModel::toSignIn,
+        onSignUpClick = viewModel::toSignUp,
+        onSignOutClick = viewModel::onSignOut,
+        onDeleteAccountClick = viewModel::onDeleteAccount
+    )
+}
+
+@Composable
+private fun AccountCenterContent(
+    user: User,
+    onSignInClick: () -> Unit,
+    onSignUpClick: () -> Unit,
+    onSignOutClick: () -> Unit,
+    onDeleteAccountClick: () -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .background(color = Color(0xFFF8EEE2))
+            .fillMaxSize()
+            .padding(
+                start = 16.dp,
+                end = 16.dp
+            ),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+
         Column(
-            modifier = Modifier.fillMaxSize(),
-            horizontalAlignment = Alignment.CenterHorizontally
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            TopAppBar(title = { Text(text = stringResource(R.string.account_center)) }) 
-            
-            Spacer(modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp))
+            Spacer(
+                modifier = Modifier.height(24.dp)
+            )
 
-            Card(modifier = Modifier.padding(16.dp, 0.dp, 16.dp, 8.dp)) {
-                Column(modifier = Modifier
+            AsyncImage(
+                model = user.photoUri,
+                contentDescription = "",
+                placeholder = painterResource(id = R.drawable.google_g),
+                error = painterResource(id = R.drawable.google_g),
+                fallback = painterResource(id = R.drawable.google_g),
+                modifier = Modifier
+                    .size(128.dp)
+                    .clip(CircleShape)
+            )
+
+            Spacer(
+                modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 16.dp, start = 16.dp, end = 16.dp)) {
+                    .padding(12.dp)
+            )
 
-                    if (!user.isAnonymous) {
-                        Text(
-                            text = String.format(stringResource(id = R.string.profile_email), user.email),
+            Text(
+                text = user.displayName.ifBlank { "Unknown" },
+                fontSize = TextUnit(28f, TextUnitType.Sp),
+                fontWeight = FontWeight.Black,
+                color = Color(0xFF403B36)
+            )
+
+            Spacer(
+                modifier = Modifier.height(12.dp)
+            )
+
+            if (!user.isAnonymous) {
+                Text(
+                    text = user.email,
+                    fontSize = TextUnit(16f, TextUnitType.Sp),
+                    color = Color(0xFF595550)
+                )
+            }
+        }
+
+        Spacer(
+            modifier = Modifier.height(24.dp)
+        )
+
+        Divider()
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Column(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+
+        }
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = "APP SETTINGS",
+            fontSize = TextUnit(10f, TextUnitType.Sp),
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF595550)
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Column {
+            if (!user.isAnonymous) {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.Start,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 16.dp)
+                                .padding(
+                                    horizontal = 8.dp,
+                                    vertical = 16.dp
+                                ),
+                            imageVector = Icons.Filled.Edit,
+                            contentDescription = "",
+                            tint = Color(0xFFD9614C)
+                        )
+                        Text(
+                            modifier = Modifier
+                                .padding(horizontal = 8.dp),
+                            text = "Edit profile",
+                            fontWeight = FontWeight.Medium,
+                            fontSize = TextUnit(16f, TextUnitType.Sp),
+                            color = Color(0xFF595550)
                         )
                     }
-
-                    Text(
-                        text = String.format(stringResource(R.string.profile_uid), user.id),
+                    Icon(
                         modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 16.dp)
-                    )
-
-                    Text(
-                        text = String.format(stringResource(R.string.profile_provider), user.providerId),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 16.dp)
+                            .padding(
+                                horizontal = 8.dp,
+                                vertical = 16.dp
+                            ),
+                        imageVector = Icons.AutoMirrored.Sharp.KeyboardArrowRight,
+                        contentDescription = "",
+                        tint = Color(0xFF595550)
                     )
                 }
             }
-            
-            Spacer(modifier = Modifier
-                .fillMaxWidth()
-                .padding(12.dp))
 
             if (user.isAnonymous) {
-                AccountCenterCard(
-                    title = stringResource(R.string.sign_in),
-                    icon = Icons.Filled.Face,
-                    onCardClick = viewModel::toSignIn
-                )
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                        .clickable(onClick = onSignInClick),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.Start,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            modifier = Modifier
+                                .padding(
+                                    horizontal = 8.dp,
+                                    vertical = 16.dp
+                                ),
+                            imageVector = Icons.Filled.Face,
+                            contentDescription = "",
+                            tint = Color(0xFFD9614C)
+                        )
+                        Text(
+                            modifier = Modifier
+                                .padding(horizontal = 8.dp),
+                            text = "Sign In",
+                            fontWeight = FontWeight.Medium,
+                            fontSize = TextUnit(16f, TextUnitType.Sp),
+                            color = Color(0xFF595550)
+                        )
+                    }
+                    Icon(
+                        modifier = Modifier
+                            .padding(
+                                horizontal = 8.dp,
+                                vertical = 16.dp
+                            ),
+                        imageVector = Icons.AutoMirrored.Sharp.KeyboardArrowRight,
+                        contentDescription = "",
+                        tint = Color(0xFF595550)
+                    )
+                }
 
-                AccountCenterCard(
-                    title = stringResource(R.string.sign_up),
-                    icon = Icons.Filled.AccountCircle,
-                    onCardClick = viewModel::toSignUp
-                )
-            } else {
-                ExitAppCard(onSignOutClick = viewModel::onSignOut)
-                RemoveAccountCard(onRemoveAccountClick = viewModel::onDeleteAccount)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                        .clickable(onClick = onSignUpClick),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(
+                        horizontalArrangement = Arrangement.Start,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(
+                            modifier = Modifier
+                                .padding(
+                                    horizontal = 8.dp,
+                                    vertical = 16.dp
+                                ),
+                            imageVector = Icons.Filled.AccountCircle,
+                            contentDescription = "",
+                            tint = Color(0xFFD9614C)
+                        )
+                        Text(
+                            modifier = Modifier
+                                .padding(horizontal = 8.dp),
+                            text = "Sign Up",
+                            fontWeight = FontWeight.Medium,
+                            fontSize = TextUnit(16f, TextUnitType.Sp),
+                            color = Color(0xFF595550)
+                        )
+                    }
+                    Icon(
+                        modifier = Modifier
+                            .padding(
+                                horizontal = 8.dp,
+                                vertical = 16.dp
+                            ),
+                        imageVector = Icons.AutoMirrored.Sharp.KeyboardArrowRight,
+                        contentDescription = "",
+                        tint = Color(0xFF595550)
+                    )
+                }
+            }
+
+            if (!user.isAnonymous) {
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Divider()
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                        .clickable(onClick = onSignOutClick),
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        modifier = Modifier
+                            .padding(
+                                horizontal = 8.dp,
+                                vertical = 16.dp
+                            ),
+                        imageVector = Icons.AutoMirrored.Filled.ExitToApp,
+                        contentDescription = "",
+                        tint = Color(0xFFD9614C)
+                    )
+                    Text(
+                        modifier = Modifier
+                            .padding(horizontal = 8.dp),
+                        text = "Sign out",
+                        fontWeight = FontWeight.Medium,
+                        fontSize = TextUnit(16f, TextUnitType.Sp),
+                        color = Color(0xFFD9614C)
+                    )
+                }
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp)
+                        .clickable(onClick = onDeleteAccountClick),
+                    horizontalArrangement = Arrangement.Start,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        modifier = Modifier
+                            .padding(
+                                horizontal = 8.dp,
+                                vertical = 16.dp
+                            ),
+                        imageVector = Icons.Filled.Delete,
+                        contentDescription = "",
+                        tint = Color(0xFFD9614C)
+                    )
+                    Text(
+                        modifier = Modifier
+                            .padding(horizontal = 8.dp),
+                        text = "Delete account",
+                        fontWeight = FontWeight.Medium,
+                        fontSize = TextUnit(16f, TextUnitType.Sp),
+                        color = Color(0xFFD9614C)
+                    )
+                }
             }
         }
     }
 }
 
+@Preview
 @Composable
-fun AccountCenterCard(
-    title: String,
-    icon: ImageVector,
-    onCardClick: () -> Unit
-) {
-    Card(
-        modifier = Modifier
-            .padding(16.dp, 0.dp, 16.dp, 8.dp)
-    ) {
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .clickable(onClick = onCardClick)
-                .fillMaxWidth()
-                .padding(16.dp)
-        ) {
-            Column(modifier = Modifier.weight(1f)) { Text(title) }
-            Icon(icon, contentDescription = "Icon")
-        }
-    }
-}
-
-@Composable
-fun ExitAppCard(onSignOutClick: () -> Unit) {
-    var showExitAppDialog by remember { mutableStateOf(false) }
-
-    AccountCenterCard(stringResource(R.string.sign_out),
-        Icons.AutoMirrored.Filled.ExitToApp) {
-        showExitAppDialog = true
-    }
-
-    if (showExitAppDialog) {
-        AlertDialog(
-            title = { Text(stringResource(R.string.sign_out_title)) },
-            text = { Text(stringResource(R.string.sign_out_description)) },
-            dismissButton = {
-                Button(onClick = { showExitAppDialog = false }) {
-                    Text(text = stringResource(R.string.cancel))
-                }
-            },
-            confirmButton = {
-                Button(onClick = {
-                    onSignOutClick()
-                    showExitAppDialog = false
-                }) {
-                    Text(text = stringResource(R.string.sign_out))
-                }
-            },
-            onDismissRequest = { showExitAppDialog = false }
-        )
-    }
-}
-
-@Composable
-fun RemoveAccountCard(onRemoveAccountClick: () -> Unit) {
-    var showRemoveAccDialog by remember { mutableStateOf(false) }
-
-    AccountCenterCard(stringResource(R.string.delete_account), Icons.Filled.Delete) {
-        showRemoveAccDialog = true
-    }
-
-    if (showRemoveAccDialog) {
-        AlertDialog(
-            title = { Text(stringResource(R.string.delete_account_title)) },
-            text = { Text(stringResource(R.string.delete_account_description)) },
-            dismissButton = {
-                Button(onClick = { showRemoveAccDialog = false }) {
-                    Text(text = stringResource(R.string.cancel))
-                }
-            },
-            confirmButton = {
-                Button(onClick = {
-                    onRemoveAccountClick()
-                    showRemoveAccDialog = false
-                }) {
-                    Text(text = stringResource(R.string.delete_account))
-                }
-            },
-            onDismissRequest = { showRemoveAccDialog = false }
-        )
-    }
+private fun AccountCenterScreenPreview() {
+    AccountCenterContent(
+        user = User(
+            id = "123sdfdf",
+            email = "sergey.mikhovich@gmail.com",
+            displayName = "Sergey Mikhovich",
+            providerId = "firebase",
+            isAnonymous = false
+        ),
+        onSignInClick = {},
+        onSignUpClick = {},
+        onSignOutClick = {},
+        onDeleteAccountClick = {}
+    )
 }

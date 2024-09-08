@@ -24,7 +24,6 @@ class AccountCenterViewModel @Inject constructor(
 
     val user: StateFlow<User> =
         accountRepository.observeCurrentUser()
-            .filterNotNull()
             .stateIn(
                 viewModelScope,
                 SharingStarted.WhileSubscribed(5000L),
