@@ -93,8 +93,8 @@ private fun NoteContent(
                         Text(
                             modifier = Modifier.fillMaxSize(),
                             text = "Title",
-                            fontSize = TextUnit(32f, TextUnitType.Sp),
-                            fontWeight = FontWeight.Bold,
+                            fontSize = TextUnit(24f, TextUnitType.Sp),
+                            fontWeight = FontWeight.ExtraBold,
                             lineHeight = TextUnit(1.2F, TextUnitType.Em),
                             color = Color(0x51403B36)
                         )
@@ -123,7 +123,7 @@ private fun NoteContent(
                     if (description.isEmpty()) {
                         Text(
                             text = "Description",
-                            fontSize = TextUnit(18f, TextUnitType.Sp),
+                            fontSize = TextUnit(16f, TextUnitType.Sp),
                             fontWeight = FontWeight.Bold,
                             lineHeight = TextUnit(1.4F, TextUnitType.Em),
                             color = Color(0x51595550)
