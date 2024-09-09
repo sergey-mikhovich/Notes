@@ -105,8 +105,8 @@ private fun NotesContent(
                 title = {
                     Text(
                         text = stringResource(id = R.string.app_name),
-                        fontSize = TextUnit(32f, TextUnitType.Sp),
-                        fontWeight = FontWeight.Black,
+                        fontSize = TextUnit(24f, TextUnitType.Sp),
+                        fontWeight = FontWeight.Bold,
                         color = Color(0xFF403B36)
                     )
                 },
@@ -269,7 +269,7 @@ fun NoteCard(
             )
             Text(
                 text = description,
-                fontSize = TextUnit(16f, TextUnitType.Sp),
+                fontSize = TextUnit(14f, TextUnitType.Sp),
                 fontWeight = FontWeight.Medium,
                 lineHeight = TextUnit(1.3f, TextUnitType.Em),
                 color = Color(0xFF595550)
