@@ -116,13 +116,11 @@ private fun AccountCenterContent(
                 modifier = Modifier.height(12.dp)
             )
 
-            if (!user.isAnonymous) {
-                Text(
-                    text = user.email,
-                    fontSize = TextUnit(16f, TextUnitType.Sp),
-                    color = Color(0xFF595550)
-                )
-            }
+            Text(
+                text = user.email,
+                fontSize = TextUnit(16f, TextUnitType.Sp),
+                color = Color(0xFF595550)
+            )
         }
 
         Spacer(
@@ -149,150 +147,14 @@ private fun AccountCenterContent(
         Spacer(modifier = Modifier.height(8.dp))
 
         Column {
-            if (!user.isAnonymous) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Row(
-                        horizontalArrangement = Arrangement.Start,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            modifier = Modifier
-                                .padding(
-                                    horizontal = 8.dp,
-                                    vertical = 16.dp
-                                ),
-                            imageVector = Icons.Filled.Edit,
-                            contentDescription = "",
-                            tint = Color(0xFFD9614C)
-                        )
-                        Text(
-                            modifier = Modifier
-                                .padding(horizontal = 8.dp),
-                            text = "Edit profile",
-                            fontWeight = FontWeight.Medium,
-                            fontSize = TextUnit(16f, TextUnitType.Sp),
-                            color = Color(0xFF595550)
-                        )
-                    }
-                    Icon(
-                        modifier = Modifier
-                            .padding(
-                                horizontal = 8.dp,
-                                vertical = 16.dp
-                            ),
-                        imageVector = Icons.AutoMirrored.Sharp.KeyboardArrowRight,
-                        contentDescription = "",
-                        tint = Color(0xFF595550)
-                    )
-                }
-            }
-
-            if (user.isAnonymous) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp)
-                        .clickable(onClick = onSignInClick),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Row(
-                        horizontalArrangement = Arrangement.Start,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            modifier = Modifier
-                                .padding(
-                                    horizontal = 8.dp,
-                                    vertical = 16.dp
-                                ),
-                            imageVector = Icons.Filled.Face,
-                            contentDescription = "",
-                            tint = Color(0xFFD9614C)
-                        )
-                        Text(
-                            modifier = Modifier
-                                .padding(horizontal = 8.dp),
-                            text = "Sign In",
-                            fontWeight = FontWeight.Medium,
-                            fontSize = TextUnit(16f, TextUnitType.Sp),
-                            color = Color(0xFF595550)
-                        )
-                    }
-                    Icon(
-                        modifier = Modifier
-                            .padding(
-                                horizontal = 8.dp,
-                                vertical = 16.dp
-                            ),
-                        imageVector = Icons.AutoMirrored.Sharp.KeyboardArrowRight,
-                        contentDescription = "",
-                        tint = Color(0xFF595550)
-                    )
-                }
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp)
-                        .clickable(onClick = onSignUpClick),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Row(
-                        horizontalArrangement = Arrangement.Start,
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Icon(
-                            modifier = Modifier
-                                .padding(
-                                    horizontal = 8.dp,
-                                    vertical = 16.dp
-                                ),
-                            imageVector = Icons.Filled.AccountCircle,
-                            contentDescription = "",
-                            tint = Color(0xFFD9614C)
-                        )
-                        Text(
-                            modifier = Modifier
-                                .padding(horizontal = 8.dp),
-                            text = "Sign Up",
-                            fontWeight = FontWeight.Medium,
-                            fontSize = TextUnit(16f, TextUnitType.Sp),
-                            color = Color(0xFF595550)
-                        )
-                    }
-                    Icon(
-                        modifier = Modifier
-                            .padding(
-                                horizontal = 8.dp,
-                                vertical = 16.dp
-                            ),
-                        imageVector = Icons.AutoMirrored.Sharp.KeyboardArrowRight,
-                        contentDescription = "",
-                        tint = Color(0xFF595550)
-                    )
-                }
-            }
-
-            if (!user.isAnonymous) {
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Divider()
-
-                Spacer(modifier = Modifier.height(8.dp))
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp)
-                        .clickable(onClick = onSignOutClick),
                     horizontalArrangement = Arrangement.Start,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -302,47 +164,179 @@ private fun AccountCenterContent(
                                 horizontal = 8.dp,
                                 vertical = 16.dp
                             ),
-                        imageVector = Icons.AutoMirrored.Filled.ExitToApp,
+                        imageVector = Icons.Filled.Edit,
                         contentDescription = "",
                         tint = Color(0xFFD9614C)
                     )
                     Text(
                         modifier = Modifier
                             .padding(horizontal = 8.dp),
-                        text = "Sign out",
+                        text = "Edit profile",
                         fontWeight = FontWeight.Medium,
                         fontSize = TextUnit(16f, TextUnitType.Sp),
-                        color = Color(0xFFD9614C)
+                        color = Color(0xFF595550)
                     )
                 }
-
-                Row(
+                Icon(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp)
-                        .clickable(onClick = onDeleteAccountClick),
-                    horizontalArrangement = Arrangement.Start,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        modifier = Modifier
-                            .padding(
-                                horizontal = 8.dp,
-                                vertical = 16.dp
-                            ),
-                        imageVector = Icons.Filled.Delete,
-                        contentDescription = "",
-                        tint = Color(0xFFD9614C)
-                    )
-                    Text(
-                        modifier = Modifier
-                            .padding(horizontal = 8.dp),
-                        text = "Delete account",
-                        fontWeight = FontWeight.Medium,
-                        fontSize = TextUnit(16f, TextUnitType.Sp),
-                        color = Color(0xFFD9614C)
-                    )
-                }
+                        .padding(
+                            horizontal = 8.dp,
+                            vertical = 16.dp
+                        ),
+                    imageVector = Icons.AutoMirrored.Sharp.KeyboardArrowRight,
+                    contentDescription = "",
+                    tint = Color(0xFF595550)
+                )
+            }
+
+//            if (user.isAnonymous) {
+//                Row(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .height(56.dp)
+//                        .clickable(onClick = onSignInClick),
+//                    horizontalArrangement = Arrangement.SpaceBetween,
+//                    verticalAlignment = Alignment.CenterVertically
+//                ) {
+//                    Row(
+//                        horizontalArrangement = Arrangement.Start,
+//                        verticalAlignment = Alignment.CenterVertically
+//                    ) {
+//                        Icon(
+//                            modifier = Modifier
+//                                .padding(
+//                                    horizontal = 8.dp,
+//                                    vertical = 16.dp
+//                                ),
+//                            imageVector = Icons.Filled.Face,
+//                            contentDescription = "",
+//                            tint = Color(0xFFD9614C)
+//                        )
+//                        Text(
+//                            modifier = Modifier
+//                                .padding(horizontal = 8.dp),
+//                            text = "Sign In",
+//                            fontWeight = FontWeight.Medium,
+//                            fontSize = TextUnit(16f, TextUnitType.Sp),
+//                            color = Color(0xFF595550)
+//                        )
+//                    }
+//                    Icon(
+//                        modifier = Modifier
+//                            .padding(
+//                                horizontal = 8.dp,
+//                                vertical = 16.dp
+//                            ),
+//                        imageVector = Icons.AutoMirrored.Sharp.KeyboardArrowRight,
+//                        contentDescription = "",
+//                        tint = Color(0xFF595550)
+//                    )
+//                }
+//
+//                Row(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .height(56.dp)
+//                        .clickable(onClick = onSignUpClick),
+//                    horizontalArrangement = Arrangement.SpaceBetween,
+//                    verticalAlignment = Alignment.CenterVertically
+//                ) {
+//                    Row(
+//                        horizontalArrangement = Arrangement.Start,
+//                        verticalAlignment = Alignment.CenterVertically
+//                    ) {
+//                        Icon(
+//                            modifier = Modifier
+//                                .padding(
+//                                    horizontal = 8.dp,
+//                                    vertical = 16.dp
+//                                ),
+//                            imageVector = Icons.Filled.AccountCircle,
+//                            contentDescription = "",
+//                            tint = Color(0xFFD9614C)
+//                        )
+//                        Text(
+//                            modifier = Modifier
+//                                .padding(horizontal = 8.dp),
+//                            text = "Sign Up",
+//                            fontWeight = FontWeight.Medium,
+//                            fontSize = TextUnit(16f, TextUnitType.Sp),
+//                            color = Color(0xFF595550)
+//                        )
+//                    }
+//                    Icon(
+//                        modifier = Modifier
+//                            .padding(
+//                                horizontal = 8.dp,
+//                                vertical = 16.dp
+//                            ),
+//                        imageVector = Icons.AutoMirrored.Sharp.KeyboardArrowRight,
+//                        contentDescription = "",
+//                        tint = Color(0xFF595550)
+//                    )
+//                }
+//            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Divider()
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
+                    .clickable(onClick = onSignOutClick),
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    modifier = Modifier
+                        .padding(
+                            horizontal = 8.dp,
+                            vertical = 16.dp
+                        ),
+                    imageVector = Icons.AutoMirrored.Filled.ExitToApp,
+                    contentDescription = "",
+                    tint = Color(0xFFD9614C)
+                )
+                Text(
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp),
+                    text = "Sign out",
+                    fontWeight = FontWeight.Medium,
+                    fontSize = TextUnit(16f, TextUnitType.Sp),
+                    color = Color(0xFFD9614C)
+                )
+            }
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp)
+                    .clickable(onClick = onDeleteAccountClick),
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    modifier = Modifier
+                        .padding(
+                            horizontal = 8.dp,
+                            vertical = 16.dp
+                        ),
+                    imageVector = Icons.Filled.Delete,
+                    contentDescription = "",
+                    tint = Color(0xFFD9614C)
+                )
+                Text(
+                    modifier = Modifier
+                        .padding(horizontal = 8.dp),
+                    text = "Delete account",
+                    fontWeight = FontWeight.Medium,
+                    fontSize = TextUnit(16f, TextUnitType.Sp),
+                    color = Color(0xFFD9614C)
+                )
             }
         }
     }
@@ -355,9 +349,7 @@ private fun AccountCenterScreenPreview() {
         user = User(
             id = "123sdfdf",
             email = "sergey.mikhovich@gmail.com",
-            displayName = "Sergey Mikhovich",
-            providerId = "firebase",
-            isAnonymous = false
+            displayName = "Sergey Mikhovich"
         ),
         onSignInClick = {},
         onSignUpClick = {},

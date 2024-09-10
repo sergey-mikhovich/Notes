@@ -6,7 +6,5 @@ data class User(
     val id: String = "",
     val email: String = "",
     val displayName: String = "",
-    val providerId: String = "",
-    val photoUri: Uri? = Uri.EMPTY,
-    val isAnonymous: Boolean = true
+    val photoUri: Uri? = Uri.EMPTY
 )

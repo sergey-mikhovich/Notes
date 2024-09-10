@@ -16,10 +16,7 @@ class SplashScreenViewModel @Inject constructor(
 
     fun onAppStart() {
         viewModelScope.launch {
-            if (!accountRepository.hasUser())
-                accountRepository.createAnonymousAccount()
-
-            toNotes()
+            if (accountRepository.hasUser()) toNotes() else toSignIn()
         }
     }
 }

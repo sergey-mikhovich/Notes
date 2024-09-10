@@ -11,6 +11,12 @@ class SplashRouterImpl @Inject constructor(
     private val navigator: Navigator
 ): SplashRouter {
 
+    override fun toSignIn() {
+        navigator.navigateTo(
+            SignInDirection.createActionAndPopUpTo(SplashDirection.route)
+        )
+    }
+
     override fun toNotes() {
         navigator.navigateTo(
             NotesDirection.createActionAndPopUpTo(SplashDirection.route)
