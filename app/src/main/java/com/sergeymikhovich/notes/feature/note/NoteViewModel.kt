@@ -3,10 +3,13 @@ package com.sergeymikhovich.notes.feature.note
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.ktx.auth
+import com.google.firebase.ktx.Firebase
 import com.sergeymikhovich.notes.core.model.Note
 import com.sergeymikhovich.notes.core.data.repository.NoteRepository
 import com.sergeymikhovich.notes.core.domain.UpsertNoteResult
 import com.sergeymikhovich.notes.core.domain.UpsertNoteUseCase
+import com.sergeymikhovich.notes.core.network.getCurrentUserId
 import com.sergeymikhovich.notes.feature.note.navigation.NoteDirection
 import com.sergeymikhovich.notes.feature.note.navigation.NoteRouter
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -62,10 +65,22 @@ class NoteViewModel @Inject constructor(
             val noteId = getNoteId() ?: ""
 
             if (noteId.isNotBlank()) {
-                upsertNoteUseCase(Note(noteId, note.title, note.description))
+                upsertNoteUseCase(
+                    Note(
+                        id = noteId,
+                        userId = Firebase.auth.getCurrentUserId(),
+                        title = note.title,
+                        description = note.description
+                    )
+                )
                 back()
             } else {
-                when (upsertNoteUseCase(Note(note.title, note.description))) {
+                when (upsertNoteUseCase(
+                    Note(
+                        userId = Firebase.auth.getCurrentUserId(),
+                        title = note.title,
+                        description = note.description))
+                ) {
                     UpsertNoteResult.Success -> back()
                     UpsertNoteResult.EmptyNote -> {
                         _error.tryEmit("Empty note discarded")

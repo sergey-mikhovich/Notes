@@ -1,6 +1,5 @@
 package com.sergeymikhovich.notes.feature.notes
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -99,6 +98,7 @@ private fun NotesContent(
             modifier = Modifier
                 .background(color = Color(0xFFF8EEE2))
                 .fillMaxSize()
+                .padding(paddingValues)
         ) {
             TopAppBar(
                 backgroundColor = Color(0xFFF8EEE2),
@@ -283,7 +283,12 @@ fun NoteCard(
 fun NotesScreenPreview() {
     NotesContent(
         state = NotesState(
-            notes = listOf(Note("My first title", "To speak about my drawbacks you need to know how to deal with my assistants"))
+            notes = listOf(
+                Note(
+                    userId = "userId",
+                    title = "My first title",
+                    description = "To speak about my drawbacks you need to know how to deal with my assistants")
+            )
         ),
         onCreateNoteClick = {},
         onAccountCenterClick = {},

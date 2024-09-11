@@ -5,9 +5,9 @@ import kotlinx.coroutines.flow.Flow
 
 interface NetworkNoteDataSource {
 
-    fun observeAll(): Flow<List<NetworkNote>>
+    fun observeAll(userId: String): Flow<List<NetworkNote>>
 
-    suspend fun getByIds(ids: List<String>): List<NetworkNote>
+    suspend fun getByIds(ids: List<String>, userId: String): List<NetworkNote>
 
     suspend fun deleteByIds(ids: List<String>)
 

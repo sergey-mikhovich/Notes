@@ -14,6 +14,7 @@ class NoteMapper {
         Mapper<NoteEntity, Note> { entity ->
             Note(
                 id = entity.id,
+                userId = entity.userId,
                 title = entity.title,
                 description = entity.description
             )
@@ -24,6 +25,7 @@ class NoteMapper {
         Mapper<Note, NoteEntity> { domain ->
             NoteEntity(
                 id = domain.id,
+                userId = domain.userId,
                 title = domain.title,
                 description = domain.description
             )
@@ -34,6 +36,7 @@ class NoteMapper {
         Mapper<NetworkNote, NoteEntity> { network ->
             NoteEntity(
                 id = network.id,
+                userId = network.userId,
                 title = network.title,
                 description = network.description
             )
@@ -41,11 +44,12 @@ class NoteMapper {
     }
 
     val entityToNetworkNote by lazy {
-        Mapper<NoteEntity, NetworkNote> { entiry ->
+        Mapper<NoteEntity, NetworkNote> { entity ->
             NetworkNote(
-                id = entiry.id,
-                title = entiry.title,
-                description = entiry.description
+                id = entity.id,
+                userId = entity.userId,
+                title = entity.title,
+                description = entity.description
             )
         }
     }
@@ -54,6 +58,7 @@ class NoteMapper {
         Mapper<ChangeNoteEntity, ChangeNote> { entity ->
             ChangeNote(
                 id = entity.id,
+                userId = entity.userId,
                 lastModifiedTime = entity.lastModifiedTime,
                 deleted = entity.deleted
             )
@@ -64,6 +69,7 @@ class NoteMapper {
         Mapper<ChangeNoteEntity, NetworkChangeNote> { entity ->
             NetworkChangeNote(
                 id = entity.id,
+                userId = entity.userId,
                 lastModifiedTime = entity.lastModifiedTime,
                 deleted = entity.deleted
             )
@@ -74,6 +80,7 @@ class NoteMapper {
         Mapper<NetworkChangeNote, ChangeNote> { network ->
             ChangeNote(
                 id = network.id,
+                userId = network.userId,
                 lastModifiedTime = network.lastModifiedTime,
                 deleted = network.deleted
             )
@@ -84,6 +91,7 @@ class NoteMapper {
         Mapper<NetworkChangeNote, ChangeNoteEntity> { network ->
             ChangeNoteEntity(
                 id = network.id,
+                userId = network.userId,
                 lastModifiedTime = network.lastModifiedTime,
                 deleted = network.deleted
             )

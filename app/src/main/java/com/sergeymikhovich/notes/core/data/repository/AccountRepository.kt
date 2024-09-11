@@ -8,10 +8,9 @@ interface AccountRepository {
     fun hasUser(): Boolean
     fun getUserProfile(): User
     suspend fun createAnonymousAccount()
-    suspend fun linkAccountWithGoogle(idToken: String)
-    suspend fun linkAccountWithEmail(email: String, password: String)
+    suspend fun createAccountWithEmailAndPassword(email: String, password: String)
     suspend fun signInWithGoogle(idToken: String)
-    suspend fun signInWithEmail(email: String, password: String)
+    suspend fun signInWithEmailAndPassword(email: String, password: String)
     suspend fun signOut()
     suspend fun deleteAccount()
 }

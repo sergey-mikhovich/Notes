@@ -4,9 +4,9 @@ import com.sergeymikhovich.notes.core.network.model.NetworkChangeNote
 
 interface NetworkChangeNoteDataSource {
 
-    suspend fun getChangeNotesAfter(time: Long): List<NetworkChangeNote>
+    suspend fun getChangeNotesAfter(time: Long, userId: String): List<NetworkChangeNote>
 
-    suspend fun getLastChangeNote(): NetworkChangeNote?
+    suspend fun getLastChangeNote(userId: String): NetworkChangeNote?
 
     suspend fun upsert(networkChangeNote: NetworkChangeNote)
 

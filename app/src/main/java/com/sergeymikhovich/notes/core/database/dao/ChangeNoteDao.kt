@@ -8,11 +8,11 @@ import com.sergeymikhovich.notes.core.database.model.ChangeNoteEntity
 @Dao
 interface ChangeNoteDao {
 
-    @Query("SELECT * FROM change_note WHERE lastModifiedTime > :time")
-    suspend fun getChangeNotesAfter(time: Long): List<ChangeNoteEntity>
+    @Query("SELECT * FROM change_note WHERE lastModifiedTime > :time AND userId = :userId")
+    suspend fun getChangeNotesAfter(time: Long, userId: String): List<ChangeNoteEntity>
 
-    @Query("SELECT * FROM change_note ORDER BY lastModifiedTime DESC LIMIT 1")
-    suspend fun getLastChangeNote(): ChangeNoteEntity?
+    @Query("SELECT * FROM change_note WHERE userId = :userId ORDER BY lastModifiedTime DESC LIMIT 1")
+    suspend fun getLastChangeNote(userId: String): ChangeNoteEntity?
 
     @Upsert
     suspend fun upsert(changeNoteEntity: ChangeNoteEntity)

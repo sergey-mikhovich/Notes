@@ -1,6 +1,5 @@
 package com.sergeymikhovich.notes.core.network
 
-import com.google.firebase.auth.ktx.auth
 import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.firestore.toObject
@@ -11,19 +10,21 @@ import javax.inject.Inject
 
 class CloudFirestoreChangeNoteDataSource @Inject constructor(): NetworkChangeNoteDataSource {
 
-    override suspend fun getChangeNotesAfter(time: Long): List<NetworkChangeNote> {
+    override suspend fun getChangeNotesAfter(time: Long, userId: String): List<NetworkChangeNote> {
         val querySnapshot = Firebase.firestore
             .collection(NetworkChangeNote.COLLECTION_NAME)
             .whereGreaterThan(NetworkChangeNote.LAST_MODIFIED_TIME, time)
+            .whereEqualTo(NetworkChangeNote.USER_ID, userId)
             .get()
             .await()
 
         return querySnapshot.map { it.toObject<NetworkChangeNote>() }
     }
 
-    override suspend fun getLastChangeNote(): NetworkChangeNote? {
+    override suspend fun getLastChangeNote(userId: String): NetworkChangeNote? {
         val querySnapshot = Firebase.firestore
             .collection(NetworkChangeNote.COLLECTION_NAME)
+            .whereEqualTo(NetworkChangeNote.USER_ID, userId)
             .orderBy(NetworkChangeNote.LAST_MODIFIED_TIME, Query.Direction.DESCENDING)
             .limit(1)
             .get()
@@ -35,6 +36,7 @@ class CloudFirestoreChangeNoteDataSource @Inject constructor(): NetworkChangeNot
     override suspend fun upsert(networkChangeNote: NetworkChangeNote) {
         val changeNote = hashMapOf(
             NetworkChangeNote.ID to networkChangeNote.id,
+            NetworkChangeNote.USER_ID to networkChangeNote.userId,
             NetworkChangeNote.LAST_MODIFIED_TIME to networkChangeNote.lastModifiedTime,
             NetworkChangeNote.DELETED to networkChangeNote.deleted
         )
@@ -64,6 +66,7 @@ class CloudFirestoreChangeNoteDataSource @Inject constructor(): NetworkChangeNot
             for (networkChangeNote in networkChangeNotes) {
                 val changeNote = hashMapOf(
                     NetworkChangeNote.ID to networkChangeNote.id,
+                    NetworkChangeNote.USER_ID to networkChangeNote.userId,
                     NetworkChangeNote.LAST_MODIFIED_TIME to networkChangeNote.lastModifiedTime,
                     NetworkChangeNote.DELETED to networkChangeNote.deleted
                 )

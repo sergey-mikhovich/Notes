@@ -16,21 +16,23 @@ import javax.inject.Inject
 
 class CloudFirestoreNoteDataSource @Inject constructor(): NetworkNoteDataSource {
 
-    override fun observeAll(): Flow<List<NetworkNote>> =
+    override fun observeAll(userId: String): Flow<List<NetworkNote>> =
         Firebase.firestore
             .collection(NetworkNote.COLLECTION_NAME)
+            .whereEqualTo(NetworkNote.USER_ID, userId)
             .snapshots().map { querySnapshot ->
                 querySnapshot.map {
                     it.toObject<NetworkNote>()
                 }
             }
 
-    override suspend fun getByIds(ids: List<String>): List<NetworkNote> {
+    override suspend fun getByIds(ids: List<String>, userId: String): List<NetworkNote> {
         if (ids.isEmpty()) return emptyList()
 
         val querySnapshot = Firebase.firestore
             .collection(NetworkNote.COLLECTION_NAME)
             .whereIn(NetworkNote.ID, ids)
+            .whereEqualTo(NetworkNote.USER_ID, userId)
             .get()
             .await()
 
@@ -65,6 +67,7 @@ class CloudFirestoreNoteDataSource @Inject constructor(): NetworkNoteDataSource 
     override suspend fun upsert(networkNote: NetworkNote) {
         val note = hashMapOf(
             NetworkNote.ID to networkNote.id,
+            NetworkNote.USER_ID to networkNote.userId,
             NetworkNote.TITLE to networkNote.title,
             NetworkNote.DESCRIPTION to networkNote.description
         )
@@ -96,6 +99,7 @@ class CloudFirestoreNoteDataSource @Inject constructor(): NetworkNoteDataSource 
             for (networkNote in networkNotes) {
                 val note = hashMapOf(
                     NetworkNote.ID to networkNote.id,
+                    NetworkNote.USER_ID to networkNote.userId,
                     NetworkNote.TITLE to networkNote.title,
                     NetworkNote.DESCRIPTION to networkNote.description
                 )

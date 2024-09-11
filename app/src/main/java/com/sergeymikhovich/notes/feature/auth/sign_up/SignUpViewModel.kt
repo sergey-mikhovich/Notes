@@ -60,7 +60,7 @@ class SignUpViewModel @Inject constructor(
                 throw IllegalArgumentException("Passwords do not match")
             }
 
-            accountRepository.linkAccountWithEmail(_email.value, _password.value)
+            accountRepository.createAccountWithEmailAndPassword(_email.value, _password.value)
 
             toNotes()
         }
@@ -70,7 +70,7 @@ class SignUpViewModel @Inject constructor(
         viewModelScope.launch {
             if (credential is CustomCredential && credential.type == TYPE_GOOGLE_ID_TOKEN_CREDENTIAL) {
                 val googleIdTokenCredential = GoogleIdTokenCredential.createFrom(credential.data)
-                accountRepository.linkAccountWithGoogle(googleIdTokenCredential.idToken)
+                accountRepository.signInWithGoogle(googleIdTokenCredential.idToken)
                 toNotes()
             } else {
                 Log.e("SignUpViewModel", "Cannot sign up with Google")

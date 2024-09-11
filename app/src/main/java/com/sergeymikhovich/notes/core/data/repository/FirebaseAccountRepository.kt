@@ -17,7 +17,6 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
@@ -50,17 +49,9 @@ class FirebaseAccountRepository @Inject constructor(
         }
     }
 
-    override suspend fun linkAccountWithGoogle(idToken: String) {
+    override suspend fun createAccountWithEmailAndPassword(email: String, password: String) {
         withContext(context) {
-            val firebaseCredential = GoogleAuthProvider.getCredential(idToken, null)
-            Firebase.auth.currentUser!!.linkWithCredential(firebaseCredential).await()
-        }
-    }
-
-    override suspend fun linkAccountWithEmail(email: String, password: String) {
-        withContext(context) {
-            val credential = EmailAuthProvider.getCredential(email, password)
-            Firebase.auth.currentUser!!.linkWithCredential(credential).await()
+            Firebase.auth.createUserWithEmailAndPassword(email, password).await()
         }
     }
 
@@ -71,9 +62,9 @@ class FirebaseAccountRepository @Inject constructor(
         }
     }
 
-    override suspend fun signInWithEmail(email: String, password: String) {
+    override suspend fun signInWithEmailAndPassword(email: String, password: String) {
         withContext(context) {
-            Firebase.auth.signInWithEmailAndPassword(email, password)
+            Firebase.auth.signInWithEmailAndPassword(email, password).await()
         }
     }
 

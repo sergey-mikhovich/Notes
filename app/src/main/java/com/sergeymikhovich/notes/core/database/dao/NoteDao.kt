@@ -9,14 +9,14 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface NoteDao {
 
-    @Query("SELECT * FROM note")
-    fun observeAll(): Flow<List<NoteEntity>>
+    @Query("SELECT * FROM note WHERE userId = :userId")
+    fun observeAll(userId: String): Flow<List<NoteEntity>>
 
-    @Query("SELECT * FROM note WHERE id IN (:ids)")
-    fun getByIds(ids: List<String>): List<NoteEntity>
+    @Query("SELECT * FROM note WHERE id IN (:ids) AND userId = :userId")
+    fun getByIds(ids: List<String>, userId: String): List<NoteEntity>
 
-    @Query("SELECT * FROM note WHERE id = :id")
-    fun getById(id: String): NoteEntity?
+    @Query("SELECT * FROM note WHERE id = :id AND userId = :userId")
+    fun getById(id: String, userId: String): NoteEntity?
 
     @Query("DELETE FROM note WHERE id = :id")
     fun deleteById(id: String)

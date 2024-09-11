@@ -39,7 +39,7 @@ class SignInViewModel @Inject constructor(
 
     fun onSignInClick() {
         viewModelScope.launch {
-            accountRepository.signInWithEmail(_email.value, _password.value)
+            accountRepository.signInWithEmailAndPassword(_email.value, _password.value)
             toNotes()
         }
     }
