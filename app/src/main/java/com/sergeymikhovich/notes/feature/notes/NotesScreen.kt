@@ -1,5 +1,9 @@
 package com.sergeymikhovich.notes.feature.notes
 
+import android.Manifest.permission.POST_NOTIFICATIONS
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -30,10 +34,15 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -48,6 +57,8 @@ import androidx.navigation.NavGraphBuilder
 import com.sergeymikhovich.notes.R
 import com.sergeymikhovich.notes.core.common.navigation.composableTo
 import com.sergeymikhovich.notes.core.model.Note
+import com.sergeymikhovich.notes.core.ui.PermissionScreen
+import com.sergeymikhovich.notes.core.ui.PermissionScreenState
 import com.sergeymikhovich.notes.feature.notes.navigation.NotesDirection
 
 fun NavGraphBuilder.composableToNotes() = composableTo(NotesDirection) { NotesScreen() }
@@ -57,6 +68,36 @@ fun NotesScreen(
     viewModel: NotesViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val permissionState by viewModel.permissionState.collectAsStateWithLifecycle()
+    var permissionScreenState by remember { mutableStateOf(PermissionScreenState()) }
+    val context = LocalContext.current
+
+    val requestPermissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        viewModel.onPermissionChange(permissions)
+    }
+
+    fun openSettings() {
+        context.applicationContext.startActivity(viewModel.createSettingsIntent())
+    }
+
+    fun requestPermissions() {
+        with(permissionState) {
+            if (!hasNotificationAccess) {
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU) return
+
+                if (notificationAccessHasDenied && !notificationAccessHasRequested) {
+                    permissionScreenState = PermissionScreenState(
+                        title = "Permission denied",
+                        rationale = "You should give permission if you want to see notifications",
+                        permission = POST_NOTIFICATIONS
+                    )
+                }
+                else requestPermissionLauncher.launch(arrayOf(POST_NOTIFICATIONS))
+            }
+        }
+    }
 
     NotesContent(
         state = state,
@@ -65,6 +106,32 @@ fun NotesScreen(
         onOpenNoteClick = viewModel::toNote,
         onDeleteNoteClick = viewModel::onDeleteNoteClick
     )
+
+    if (!permissionState.hasAllPermissions &&
+        permissionState.hasAtLeastOneDeniedAccess &&
+        !permissionState.allPermissionsRequested
+    ) {
+        PermissionScreen(
+            state = permissionScreenState,
+            onRationaleReply = { accepted ->
+                if (accepted) {
+                    openSettings()
+                }
+
+                when(permissionScreenState.permission) {
+                    POST_NOTIFICATIONS -> {
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                            viewModel.onPermissionChange(mapOf(POST_NOTIFICATIONS to false))
+                        }
+                    }
+                }
+            }
+        )
+    }
+
+    SideEffect {
+        requestPermissions()
+    }
 }
 
 @Composable

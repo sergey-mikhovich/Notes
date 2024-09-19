@@ -8,14 +8,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.sergeymikhovich.notes.app.mediator.graph.composableAll
 import com.sergeymikhovich.notes.app.ui.theme.NotesTheme
 import com.sergeymikhovich.notes.core.common.navigation.Navigator
+import com.sergeymikhovich.notes.core.permission.PermissionManager
 import com.sergeymikhovich.notes.feature.splash.navigation.SplashDirection
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -23,6 +26,9 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var navigator: Navigator
+
+    @Inject
+    lateinit var permissionManager: PermissionManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -56,6 +62,13 @@ class MainActivity : ComponentActivity() {
                     )
                 }
             }
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        lifecycleScope.launch {
+            permissionManager.checkPermissions(this@MainActivity)
         }
     }
 }
