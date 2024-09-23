@@ -29,6 +29,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
 import com.sergeymikhovich.notes.core.common.navigation.composableTo
+import com.sergeymikhovich.notes.core.design_system.component.NoteBasicTextField
 import com.sergeymikhovich.notes.feature.note.navigation.NoteDirection
 
 fun NavGraphBuilder.composeToNote() = composableTo(NoteDirection) { NoteScreen() }
@@ -74,64 +75,42 @@ private fun NoteContent(
             )
     ) {
         Spacer(modifier = Modifier.height(32.dp))
-        BasicTextField(
-            modifier = Modifier.fillMaxWidth(),
+
+        NoteBasicTextField(
             textStyle = TextStyle(
                 fontSize = TextUnit(24f, TextUnitType.Sp),
                 fontWeight = FontWeight.ExtraBold,
                 lineHeight = TextUnit(1.2F, TextUnitType.Em),
                 color = Color(0xFF595550)
             ),
-            singleLine = false,
+            placeholderText = "Title",
+            placeHolderStyle = TextStyle(
+                fontSize = TextUnit(24f, TextUnitType.Sp),
+                fontWeight = FontWeight.ExtraBold,
+                lineHeight = TextUnit(1.2F, TextUnitType.Em),
+                color = Color(0x51403B36)
+            ),
             value = title,
-            onValueChange = onTitleChanged,
-            decorationBox = { innerTextField ->
-                Column(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    if (title.isEmpty()) {
-                        Text(
-                            modifier = Modifier.fillMaxSize(),
-                            text = "Title",
-                            fontSize = TextUnit(24f, TextUnitType.Sp),
-                            fontWeight = FontWeight.ExtraBold,
-                            lineHeight = TextUnit(1.2F, TextUnitType.Em),
-                            color = Color(0x51403B36)
-                        )
-                    }
-                }
-                innerTextField()
-            }
+            onValueChange = onTitleChanged
         )
-        BasicTextField(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 16.dp),
+
+        NoteBasicTextField(
+            modifier = Modifier.padding(top = 16.dp),
             textStyle = TextStyle(
                 fontSize = TextUnit(16f, TextUnitType.Sp),
                 fontWeight = FontWeight.Medium,
                 lineHeight = TextUnit(1.3F, TextUnitType.Em),
                 color = Color(0xFF595550)
             ),
-            singleLine = false,
+            placeholderText = "Description",
+            placeHolderStyle = TextStyle(
+                fontSize = TextUnit(16f, TextUnitType.Sp),
+                fontWeight = FontWeight.Bold,
+                lineHeight = TextUnit(1.4F, TextUnitType.Em),
+                color = Color(0x51595550)
+            ),
             value = description,
-            onValueChange = onDescriptionChanged,
-            decorationBox = { innerTextField ->
-                Column(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    if (description.isEmpty()) {
-                        Text(
-                            text = "Description",
-                            fontSize = TextUnit(16f, TextUnitType.Sp),
-                            fontWeight = FontWeight.Bold,
-                            lineHeight = TextUnit(1.4F, TextUnitType.Em),
-                            color = Color(0x51595550)
-                        )
-                    }
-                }
-                innerTextField()
-            }
+            onValueChange = onDescriptionChanged
         )
     }
 }
