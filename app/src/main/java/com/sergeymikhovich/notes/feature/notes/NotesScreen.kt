@@ -1,5 +1,6 @@
 package com.sergeymikhovich.notes.feature.notes
 
+import android.Manifest
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -30,10 +31,13 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -48,6 +52,10 @@ import androidx.navigation.NavGraphBuilder
 import com.sergeymikhovich.notes.R
 import com.sergeymikhovich.notes.core.common.navigation.composableTo
 import com.sergeymikhovich.notes.core.model.Note
+import com.sergeymikhovich.notes.core.permission.PermissionScreen
+import com.sergeymikhovich.notes.core.permission.PermissionScreenState
+import com.sergeymikhovich.notes.core.permission.goToAppSettings
+import com.sergeymikhovich.notes.core.permission.rememberMultiplePermissionsState
 import com.sergeymikhovich.notes.feature.notes.navigation.NotesDirection
 
 fun NavGraphBuilder.composableToNotes() = composableTo(NotesDirection) { NotesScreen() }
@@ -57,6 +65,58 @@ fun NotesScreen(
     viewModel: NotesViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val deniedPermissionsState by viewModel.deniedPermissionsState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+
+    val permissionsState = rememberMultiplePermissionsState(
+        listOf(
+            Manifest.permission.POST_NOTIFICATIONS,
+            Manifest.permission.RECORD_AUDIO
+        ),
+        onPermissionsResult = { resultMap ->
+            viewModel.markAsPermanentlyDenied(
+                resultMap
+                    .filter { !it.value }
+                    .map { it.key }
+                    .toSet()
+            )
+        }
+    )
+
+    val permissionScreenState by remember {
+        derivedStateOf {
+            PermissionScreenState(
+                title = "Permission denied",
+                rationale = "This permission needed for correct app work",
+                confirmButtonText = if (permissionsState.shouldShowRationale) "Confirm" else "Go to Settings",
+                dismissButtonText = "Dismiss"
+            )
+        }
+    }
+
+    val showRationaleDialog by remember {
+        derivedStateOf {
+            !deniedPermissionsState.containsAll(permissionsState.revokedPermissions.map { it.permission }.toSet())
+        }
+    }
+
+    if (showRationaleDialog) {
+        PermissionScreen(
+            state = permissionScreenState,
+            onRationaleReply = { accepted ->
+                if (accepted) {
+                    if (permissionsState.shouldShowRationale)
+                        permissionsState.launchMultiplePermissionsRequest()
+                    else {
+                        viewModel.markAsPermanentlyDenied(permissionsState.revokedPermissions.map { it.permission }.toSet())
+                        context.goToAppSettings()
+                    }
+                } else {
+                    viewModel.markAsPermanentlyDenied(permissionsState.revokedPermissions.map { it.permission }.toSet())
+                }
+            }
+        )
+    }
 
     NotesContent(
         state = state,
