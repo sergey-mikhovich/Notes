@@ -53,6 +53,7 @@ class SystemPushNotifier @Inject constructor(
                 .setContentTitle("Summary")
                 .setContentText("New messages")
                 .setSmallIcon(R.drawable.google_g)
+                .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
                 .setStyle(notesNotificationStyle(truncatedNotes, "Notes"))
                 .setGroup(GROUP_ID)
                 .setGroupSummary(true)
@@ -72,6 +73,7 @@ private fun Context.createNotesNotification(
 ): Notification {
     ensureNotificationChannelExist()
     return NotificationCompat.Builder(this, CHANNEL_ID)
+        .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
         .setPriority(NotificationCompat.PRIORITY_HIGH)
         .apply(block)
         .build()
