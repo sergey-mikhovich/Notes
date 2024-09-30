@@ -6,13 +6,9 @@ import com.sergeymikhovich.notes.core.data.repository.AccountRepository
 import com.sergeymikhovich.notes.core.model.User
 import com.sergeymikhovich.notes.feature.auth.account_center.navigation.AccountCenterRouter
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -33,14 +29,14 @@ class AccountCenterViewModel @Inject constructor(
     fun onSignOut() {
         viewModelScope.launch {
             accountRepository.signOut()
-            toSplash()
+            toSignIn()
         }
     }
 
     fun onDeleteAccount() {
         viewModelScope.launch {
             accountRepository.deleteAccount()
-            toSplash()
+            toSignIn()
         }
     }
 }

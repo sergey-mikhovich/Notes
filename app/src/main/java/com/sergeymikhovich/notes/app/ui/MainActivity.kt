@@ -14,7 +14,9 @@ import androidx.navigation.compose.rememberNavController
 import com.sergeymikhovich.notes.app.mediator.graph.composableAll
 import com.sergeymikhovich.notes.app.ui.theme.NotesTheme
 import com.sergeymikhovich.notes.core.common.navigation.Navigator
-import com.sergeymikhovich.notes.feature.splash.navigation.SplashDirection
+import com.sergeymikhovich.notes.core.data.repository.AccountRepository
+import com.sergeymikhovich.notes.feature.auth.sign_in.navigation.SignInDirection
+import com.sergeymikhovich.notes.feature.notes.navigation.NotesDirection
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -23,6 +25,9 @@ class MainActivity : ComponentActivity() {
 
     @Inject
     lateinit var navigator: Navigator
+
+    @Inject
+    lateinit var accountRepository: AccountRepository
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,9 +54,12 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
+                    val startDestination =
+                        if (accountRepository.hasUser()) NotesDirection.route else SignInDirection.route
+
                     NavHost(
                         navController = navController,
-                        startDestination = SplashDirection.route,
+                        startDestination = startDestination,
                         builder = NavGraphBuilder::composableAll
                     )
                 }

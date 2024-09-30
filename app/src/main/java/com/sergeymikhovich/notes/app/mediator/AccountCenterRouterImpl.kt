@@ -4,8 +4,6 @@ import com.sergeymikhovich.notes.core.common.navigation.Navigator
 import com.sergeymikhovich.notes.feature.auth.account_center.navigation.AccountCenterRouter
 import com.sergeymikhovich.notes.feature.auth.sign_in.navigation.SignInDirection
 import com.sergeymikhovich.notes.feature.auth.sign_up.navigation.SignUpDirection
-import com.sergeymikhovich.notes.feature.notes.navigation.NotesDirection
-import com.sergeymikhovich.notes.feature.splash.navigation.SplashDirection
 import javax.inject.Inject
 
 class AccountCenterRouterImpl @Inject constructor(
@@ -18,10 +16,6 @@ class AccountCenterRouterImpl @Inject constructor(
 
     override fun toSignUp() {
         navigator.navigateTo(SignUpDirection.createAction())
-    }
-
-    override fun toSplash() {
-        navigator.navigateTo(SplashDirection.createActionAndPopUpTo(NotesDirection.route))
     }
 
     override fun back() {
