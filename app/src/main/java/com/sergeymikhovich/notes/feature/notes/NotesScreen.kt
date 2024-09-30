@@ -31,6 +31,9 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -47,6 +50,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
 import com.sergeymikhovich.notes.R
 import com.sergeymikhovich.notes.core.common.navigation.composableTo
+import com.sergeymikhovich.notes.core.design_system.component.AlertDialogState
+import com.sergeymikhovich.notes.core.design_system.component.AlertDialogWithState
 import com.sergeymikhovich.notes.core.model.Note
 import com.sergeymikhovich.notes.feature.notes.navigation.NotesDirection
 
@@ -234,6 +239,25 @@ fun NoteCard(
     onOpenNoteClick: () -> Unit,
     onDeleteNoteClick: () -> Unit
 ) {
+    var showDeleteAlertDialog by remember { mutableStateOf(false) }
+
+    if (showDeleteAlertDialog) {
+        AlertDialogWithState(
+            AlertDialogState(
+                title = "Delete note",
+                description = "Are you sure you want to delete note?",
+                confirmButtonText = "Delete",
+                dismissButtonText = "Cancel"
+            ),
+            onReply = { accepted ->
+                if (accepted)
+                    onDeleteNoteClick()
+
+                showDeleteAlertDialog = false
+            }
+        )
+    }
+
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -246,7 +270,7 @@ fun NoteCard(
             )
             .combinedClickable(
                 onClick = onOpenNoteClick,
-                onLongClick = onDeleteNoteClick
+                onLongClick = { showDeleteAlertDialog = true }
             ),
         shape = RoundedCornerShape(12.dp)
     ) {

@@ -1,7 +1,6 @@
 package com.sergeymikhovich.notes.feature.auth.account_center
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,12 +17,13 @@ import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.automirrored.sharp.KeyboardArrowRight
-import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.Face
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -41,6 +41,8 @@ import coil.compose.AsyncImage
 import com.sergeymikhovich.notes.R
 import com.sergeymikhovich.notes.core.common.navigation.composableTo
 import com.sergeymikhovich.notes.core.design_system.component.AccountCenterButton
+import com.sergeymikhovich.notes.core.design_system.component.AlertDialogState
+import com.sergeymikhovich.notes.core.design_system.component.AlertDialogWithState
 import com.sergeymikhovich.notes.core.model.User
 import com.sergeymikhovich.notes.feature.auth.account_center.navigation.AccountCenterDirection
 
@@ -194,18 +196,56 @@ private fun AccountCenterContent(
 
             Spacer(modifier = Modifier.height(8.dp))
 
+            var showSignOutAlertDialog by remember { mutableStateOf(false) }
+
+            if (showSignOutAlertDialog) {
+                AlertDialogWithState(
+                    AlertDialogState(
+                        title = "Sign Out",
+                        description = "Are you sure you want to sign out?",
+                        confirmButtonText = "Sign out",
+                        dismissButtonText = "Cancel"
+                    ),
+                    onReply = { accepted ->
+                        if (accepted)
+                            onSignOutClick()
+
+                        showSignOutAlertDialog = false
+                    }
+                )
+            }
+
             AccountCenterButton(
                 text = "Sign out",
                 textColor = Color(0xFFD9614C),
                 startIcon = Icons.AutoMirrored.Filled.ExitToApp,
-                onClick = onSignOutClick
+                onClick = { showSignOutAlertDialog = true }
             )
+
+            var showDeleteAlertDialog by remember { mutableStateOf(false) }
+
+            if (showDeleteAlertDialog) {
+                AlertDialogWithState(
+                    AlertDialogState(
+                        title = "Delete account",
+                        description = "Are you sure you want to delete your account?",
+                        confirmButtonText = "Delete",
+                        dismissButtonText = "Cancel"
+                    ),
+                    onReply = { accepted ->
+                        if (accepted)
+                            onDeleteAccountClick()
+
+                        showDeleteAlertDialog = false
+                    }
+                )
+            }
 
             AccountCenterButton(
                 text = "Delete account",
                 textColor = Color(0xFFD9614C),
                 startIcon = Icons.Filled.Delete,
-                onClick = onDeleteAccountClick
+                onClick = { showDeleteAlertDialog = true }
             )
         }
     }
