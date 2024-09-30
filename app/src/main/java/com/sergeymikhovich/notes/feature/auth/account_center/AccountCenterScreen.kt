@@ -148,52 +148,9 @@ private fun AccountCenterContent(
                 endIcon = Icons.AutoMirrored.Sharp.KeyboardArrowRight,
                 onClick = {}
             )
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Row(
-                    horizontalArrangement = Arrangement.Start,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        modifier = Modifier
-                            .padding(
-                                horizontal = 8.dp,
-                                vertical = 16.dp
-                            ),
-                        imageVector = Icons.Filled.Edit,
-                        contentDescription = "",
-                        tint = Color(0xFFD9614C)
-                    )
-                    Text(
-                        modifier = Modifier
-                            .padding(horizontal = 8.dp),
-                        text = "Edit profile",
-                        fontWeight = FontWeight.Medium,
-                        fontSize = TextUnit(16f, TextUnitType.Sp),
-                        color = Color(0xFF595550)
-                    )
-                }
-                Icon(
-                    modifier = Modifier
-                        .padding(
-                            horizontal = 8.dp,
-                            vertical = 16.dp
-                        ),
-                    imageVector = Icons.AutoMirrored.Sharp.KeyboardArrowRight,
-                    contentDescription = "",
-                    tint = Color(0xFF595550)
-                )
-            }
 
             Spacer(modifier = Modifier.height(8.dp))
-
             Divider()
-
             Spacer(modifier = Modifier.height(8.dp))
 
             var showSignOutAlertDialog by remember { mutableStateOf(false) }
@@ -216,6 +173,7 @@ private fun AccountCenterContent(
             }
 
             AccountCenterButton(
+                modifier = Modifier.fillMaxWidth(),
                 text = "Sign out",
                 textColor = Color(0xFFD9614C),
                 startIcon = Icons.AutoMirrored.Filled.ExitToApp,
@@ -242,6 +200,7 @@ private fun AccountCenterContent(
             }
 
             AccountCenterButton(
+                modifier = Modifier.fillMaxWidth(),
                 text = "Delete account",
                 textColor = Color(0xFFD9614C),
                 startIcon = Icons.Filled.Delete,

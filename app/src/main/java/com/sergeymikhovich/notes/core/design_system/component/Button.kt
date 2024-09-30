@@ -19,6 +19,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
@@ -94,8 +95,8 @@ fun AccountCenterButton(
 ) {
     Row(
         modifier = modifier
-            .fillMaxWidth()
             .height(56.dp)
+            .clip(RoundedCornerShape(12.dp))
             .clickable(onClick = onClick),
         horizontalArrangement = Arrangement.Start,
         verticalAlignment = Alignment.CenterVertically
@@ -133,7 +134,9 @@ fun AccountCenterButton(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .height(56.dp),
+            .height(56.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .clickable(onClick = onClick),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -141,7 +144,7 @@ fun AccountCenterButton(
             text = text,
             textColor = textColor,
             startIcon = startIcon,
-            onClick = onClick
+            onClick = {}
         )
         Icon(
             modifier = Modifier

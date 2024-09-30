@@ -3,7 +3,6 @@ package com.sergeymikhovich.notes.feature.notes
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -23,7 +22,6 @@ import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
-import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
@@ -36,6 +34,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -257,48 +256,36 @@ fun NoteCard(
             }
         )
     }
-
-    Surface(
+    Column(
         modifier = Modifier
+            .padding(16.dp, 0.dp, 16.dp, 8.dp)
             .fillMaxWidth()
             .wrapContentHeight()
-            .padding(16.dp, 0.dp, 16.dp, 8.dp)
-            .border(
-                width = 0.dp,
-                color = Color(0xFFFFFDF0),
-                shape = RoundedCornerShape(12.dp)
-            )
+            .clip(RoundedCornerShape(12.dp))
             .combinedClickable(
                 onClick = onOpenNoteClick,
                 onLongClick = { showDeleteAlertDialog = true }
-            ),
-        shape = RoundedCornerShape(12.dp)
+            )
+            .background(
+                color = Color(0xFFFFFDF0),
+                shape = RoundedCornerShape(12.dp)
+            )
+            .padding(12.dp)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(
-                    color = Color(0xFFFFFDF0),
-                    shape = RoundedCornerShape(12.dp)
-                )
-                .padding(12.dp)
-        ) {
-            Text(
-                modifier = Modifier
-                    .padding(bottom = 16.dp),
-                text = title,
-                fontSize = TextUnit(18f, TextUnitType.Sp),
-                fontWeight = FontWeight.ExtraBold,
-                color = Color(0xFF595550)
-            )
-            Text(
-                text = description,
-                fontSize = TextUnit(14f, TextUnitType.Sp),
-                fontWeight = FontWeight.Medium,
-                lineHeight = TextUnit(1.3f, TextUnitType.Em),
-                color = Color(0xFF595550)
-            )
-        }
+        Text(
+            modifier = Modifier.padding(bottom = 16.dp),
+            text = title,
+            fontSize = TextUnit(18f, TextUnitType.Sp),
+            fontWeight = FontWeight.ExtraBold,
+            color = Color(0xFF595550)
+        )
+        Text(
+            text = description,
+            fontSize = TextUnit(14f, TextUnitType.Sp),
+            fontWeight = FontWeight.Medium,
+            lineHeight = TextUnit(1.3f, TextUnitType.Em),
+            color = Color(0xFF595550)
+        )
     }
 }
 
