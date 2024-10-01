@@ -18,6 +18,7 @@ import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.automirrored.sharp.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -89,9 +91,9 @@ private fun AccountCenterContent(
             AsyncImage(
                 model = user.photoUri,
                 contentDescription = "",
-                placeholder = painterResource(id = R.drawable.google_g),
-                error = painterResource(id = R.drawable.google_g),
-                fallback = painterResource(id = R.drawable.google_g),
+                placeholder = rememberVectorPainter(image = Icons.Filled.Person),
+                error = rememberVectorPainter(image = Icons.Filled.Person),
+                fallback = rememberVectorPainter(image = Icons.Filled.Person),
                 modifier = Modifier
                     .size(128.dp)
                     .clip(CircleShape)

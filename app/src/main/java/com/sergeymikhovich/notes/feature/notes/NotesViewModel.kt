@@ -2,11 +2,11 @@ package com.sergeymikhovich.notes.feature.notes
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.sergeymikhovich.notes.core.data.SyncManager
-import com.sergeymikhovich.notes.core.model.Note
+import com.sergeymikhovich.notes.core.data.repository.AccountRepository
 import com.sergeymikhovich.notes.core.data.repository.NoteRepository
+import com.sergeymikhovich.notes.core.model.Note
+import com.sergeymikhovich.notes.core.model.User
 import com.sergeymikhovich.notes.feature.notes.navigation.NotesRouter
-import com.sergeymikhovich.notes.sync.workers.SyncWorker
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -25,8 +25,17 @@ data class NotesState(
 @HiltViewModel
 class NotesViewModel @Inject constructor(
     private val noteRepository: NoteRepository,
+    private val accountRepository: AccountRepository,
     private val router: NotesRouter
 ) : ViewModel(), NotesRouter by router {
+
+    val user: StateFlow<User> =
+        accountRepository.observeCurrentUser()
+            .stateIn(
+                viewModelScope,
+                SharingStarted.WhileSubscribed(5000L),
+                User()
+            )
 
     val state: StateFlow<NotesState> = noteRepository.observeAll()
         .map { NotesState(notes = it, isEmpty = it.isEmpty()) }

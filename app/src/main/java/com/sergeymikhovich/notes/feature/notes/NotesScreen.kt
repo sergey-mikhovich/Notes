@@ -3,8 +3,10 @@ package com.sergeymikhovich.notes.feature.notes
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -16,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
@@ -42,6 +45,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -53,11 +57,13 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
+import coil.compose.AsyncImage
 import com.sergeymikhovich.notes.R
 import com.sergeymikhovich.notes.core.common.navigation.composableTo
 import com.sergeymikhovich.notes.core.design_system.component.AlertDialogState
 import com.sergeymikhovich.notes.core.design_system.component.AlertDialogWithState
 import com.sergeymikhovich.notes.core.model.Note
+import com.sergeymikhovich.notes.core.model.User
 import com.sergeymikhovich.notes.feature.notes.navigation.NotesDirection
 
 fun NavGraphBuilder.composableToNotes() = composableTo(NotesDirection) { NotesScreen() }
@@ -67,9 +73,11 @@ fun NotesScreen(
     viewModel: NotesViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val user by viewModel.user.collectAsStateWithLifecycle()
 
     NotesContent(
         state = state,
+        user = user,
         onCreateNoteClick = viewModel::toCreateNote,
         onAccountCenterClick = viewModel::toAccountCenter,
         onOpenNoteClick = viewModel::toNote,
@@ -81,6 +89,7 @@ fun NotesScreen(
 @Composable
 private fun NotesContent(
     state: NotesState,
+    user: User,
     onCreateNoteClick: () -> Unit,
     onAccountCenterClick: () -> Unit,
     onOpenNoteClick: (String) -> Unit,
@@ -136,10 +145,26 @@ private fun NotesContent(
                 },
                 trailingIcon = {
                     if (!active) {
-                        IconButton(onClick = onAccountCenterClick) {
-                            Icon(
-                                imageVector = Icons.Filled.Person,
-                                contentDescription = ""
+                        var iconSize by remember { mutableStateOf(24.dp) }
+                        Box(
+                            modifier = Modifier
+                                .size(48.dp)
+                                .clip(CircleShape)
+                                .clickable(onClick = onAccountCenterClick),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            AsyncImage(
+                                model = user.photoUri,
+                                contentDescription = "",
+                                placeholder = rememberVectorPainter(image = Icons.Filled.Person),
+                                error = rememberVectorPainter(image = Icons.Filled.Person),
+                                fallback = rememberVectorPainter(image = Icons.Filled.Person),
+                                onSuccess = { iconSize = 32.dp },
+                                onLoading = { iconSize = 24.dp },
+                                onError = { iconSize = 24.dp },
+                                modifier = Modifier
+                                    .size(iconSize)
+                                    .clip(CircleShape)
                             )
                         }
                     }
@@ -352,6 +377,7 @@ fun NotesScreenPreview() {
                     description = "To speak about my drawbacks you need to know how to deal with my assistants")
             )
         ),
+        user = User(),
         onCreateNoteClick = {},
         onAccountCenterClick = {},
         onOpenNoteClick = {},
