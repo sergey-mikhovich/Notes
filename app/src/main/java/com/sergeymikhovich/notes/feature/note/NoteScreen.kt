@@ -1,24 +1,28 @@
 package com.sergeymikhovich.notes.feature.note
 
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Text
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
+import androidx.compose.material.TopAppBar
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.Notifications
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -39,89 +43,126 @@ fun NoteScreen(
     viewModel: NoteViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val context = LocalContext.current
-
-    BackHandler(onBack = viewModel::saveNote)
 
     NoteContent(
-        title = state.title,
-        description = state.description,
+        state = state,
         onTitleChanged = viewModel::changeTitle,
-        onDescriptionChanged = viewModel::changeDescription
+        onDescriptionChanged = viewModel::changeDescription,
+        onBackClick = viewModel::saveNote
     )
-
-    LaunchedEffect(viewModel) {
-        viewModel.error.collect { error ->
-            Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
-        }
-    }
 }
 
 @Composable
 private fun NoteContent(
-    title: String,
-    description: String,
+    state: NoteState,
     onTitleChanged: (String) -> Unit,
-    onDescriptionChanged: (String) -> Unit
+    onDescriptionChanged: (String) -> Unit,
+    onBackClick: () -> Unit
 ) {
-    Column(
-        modifier = Modifier
-            .background(color = Color(0xFFF8EEE2))
-            .fillMaxSize()
-            .verticalScroll(state = rememberScrollState())
-            .padding(
-                horizontal = 16.dp,
-                vertical = 24.dp
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {},
+                windowInsets = WindowInsets.systemBars,
+                backgroundColor = Color(0xFFF8EEE2),
+                navigationIcon = {
+                    IconButton(
+                        onClick = onBackClick
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = ""
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(
+                        onClick = { /*TODO*/ }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Notifications,
+                            contentDescription = ""
+                        )
+                    }
+                    IconButton(
+                        onClick = { /*TODO*/ }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Star,
+                            contentDescription = ""
+                        )
+                    }
+                },
+                elevation = 0.dp,
             )
-    ) {
-        Spacer(modifier = Modifier.height(32.dp))
+        }
+    ) { paddingValues ->
+        Column(
+            modifier = Modifier
+                .padding(paddingValues)
+                .background(color = Color(0xFFF8EEE2))
+                .fillMaxSize()
+                .verticalScroll(state = rememberScrollState())
+                .padding(
+                    start = 16.dp,
+                    end = 16.dp,
+                    bottom = 24.dp
+                )
+        ) {
+            Spacer(modifier = Modifier.height(32.dp))
 
-        NoteBasicTextField(
-            textStyle = TextStyle(
-                fontSize = TextUnit(24f, TextUnitType.Sp),
-                fontWeight = FontWeight.ExtraBold,
-                lineHeight = TextUnit(1.2F, TextUnitType.Em),
-                color = Color(0xFF595550)
-            ),
-            placeholderText = "Title",
-            placeHolderStyle = TextStyle(
-                fontSize = TextUnit(24f, TextUnitType.Sp),
-                fontWeight = FontWeight.ExtraBold,
-                lineHeight = TextUnit(1.2F, TextUnitType.Em),
-                color = Color(0x51403B36)
-            ),
-            value = title,
-            onValueChange = onTitleChanged
-        )
+            NoteBasicTextField(
+                textStyle = TextStyle(
+                    fontSize = TextUnit(24f, TextUnitType.Sp),
+                    fontWeight = FontWeight.ExtraBold,
+                    lineHeight = TextUnit(1.2F, TextUnitType.Em),
+                    color = Color(0xFF595550)
+                ),
+                placeholderText = "Title",
+                placeHolderStyle = TextStyle(
+                    fontSize = TextUnit(24f, TextUnitType.Sp),
+                    fontWeight = FontWeight.ExtraBold,
+                    lineHeight = TextUnit(1.2F, TextUnitType.Em),
+                    color = Color(0x51403B36)
+                ),
+                value = state.title,
+                onValueChange = onTitleChanged
+            )
 
-        NoteBasicTextField(
-            modifier = Modifier.padding(top = 16.dp),
-            textStyle = TextStyle(
-                fontSize = TextUnit(16f, TextUnitType.Sp),
-                fontWeight = FontWeight.Medium,
-                lineHeight = TextUnit(1.3F, TextUnitType.Em),
-                color = Color(0xFF595550)
-            ),
-            placeholderText = "Description",
-            placeHolderStyle = TextStyle(
-                fontSize = TextUnit(16f, TextUnitType.Sp),
-                fontWeight = FontWeight.Bold,
-                lineHeight = TextUnit(1.4F, TextUnitType.Em),
-                color = Color(0x51595550)
-            ),
-            value = description,
-            onValueChange = onDescriptionChanged
-        )
+            NoteBasicTextField(
+                modifier = Modifier.padding(top = 16.dp),
+                textStyle = TextStyle(
+                    fontSize = TextUnit(16f, TextUnitType.Sp),
+                    fontWeight = FontWeight.Medium,
+                    lineHeight = TextUnit(1.3F, TextUnitType.Em),
+                    color = Color(0xFF595550)
+                ),
+                placeholderText = "Description",
+                placeHolderStyle = TextStyle(
+                    fontSize = TextUnit(16f, TextUnitType.Sp),
+                    fontWeight = FontWeight.Bold,
+                    lineHeight = TextUnit(1.4F, TextUnitType.Em),
+                    color = Color(0x51595550)
+                ),
+                value = state.description,
+                onValueChange = onDescriptionChanged
+            )
+        }
     }
+
+    BackHandler(onBack = onBackClick)
 }
 
 @Preview
 @Composable
 fun NotePreview() {
     NoteContent(
-        title = "My first title",
-        description = "To create this note I needed to mark item as failed to rewrite it",
+        state = NoteState(
+            title = "My first title",
+            description = "To create this note I needed to mark item as failed to rewrite it",
+        ),
         onTitleChanged = {},
-        onDescriptionChanged = {}
+        onDescriptionChanged = {},
+        onBackClick = {}
     )
 }

@@ -6,6 +6,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -23,11 +24,16 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.SearchBar
+import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -36,8 +42,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -71,6 +77,7 @@ fun NotesScreen(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun NotesContent(
     state: NotesState,
@@ -79,7 +86,75 @@ private fun NotesContent(
     onOpenNoteClick: (String) -> Unit,
     onDeleteNoteClick: (String) -> Unit
 ) {
+
+
     Scaffold(
+        topBar = {
+            val context = LocalContext.current
+            var query by remember { mutableStateOf("") }
+            var active by remember { mutableStateOf(false) }
+            val paddings by remember {
+                derivedStateOf {
+                    if (!active)
+                        PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp)
+                    else
+                        PaddingValues(0.dp)
+                }
+            }
+
+            SearchBar(
+                query = query,
+                onQueryChange = { query = it },
+                onSearch = {},
+                active = active,
+                onActiveChange = { active = it },
+                placeholder = {
+                    Text(
+                        text = "Search your notes",
+                        fontSize = TextUnit(16f, TextUnitType.Sp),
+                        fontWeight = FontWeight.Normal
+                    )
+                },
+                leadingIcon = {
+                    if (!active) {
+                        IconButton(onClick = {}) {
+                            Icon(
+                                imageVector = Icons.Filled.Menu,
+                                contentDescription = ""
+                            )
+                        }
+                    } else {
+                        IconButton(
+                            onClick = { active = false }
+                        ) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = ""
+                            )
+                        }
+                    }
+                },
+                trailingIcon = {
+                    if (!active) {
+                        IconButton(onClick = onAccountCenterClick) {
+                            Icon(
+                                imageVector = Icons.Filled.Person,
+                                contentDescription = ""
+                            )
+                        }
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(color = Color(0xFFF8EEE2))
+                    .padding(paddings),
+                colors = SearchBarDefaults.colors(
+                    containerColor = Color(0xFFFFFDF0)
+                )
+            ) {
+
+            }
+        },
         floatingActionButton = {
             if (!state.isEmpty) {
                 FloatingActionButton(
@@ -100,34 +175,10 @@ private fun NotesContent(
 
         Column(
             modifier = Modifier
-                .background(color = Color(0xFFF8EEE2))
                 .fillMaxSize()
+                .background(color = Color(0xFFF8EEE2))
                 .padding(paddingValues)
         ) {
-            TopAppBar(
-                backgroundColor = Color(0xFFF8EEE2),
-                title = {
-                    Text(
-                        text = stringResource(id = R.string.app_name),
-                        fontSize = TextUnit(24f, TextUnitType.Sp),
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF403B36)
-                    )
-                },
-                actions = {
-                    IconButton(onClick = onAccountCenterClick) {
-                        Icon(
-                            imageVector = Icons.Filled.Person,
-                            contentDescription = "Account center",
-                            tint = Color(0xFF595550)
-                        )
-                    }
-                },
-                elevation = 0.dp
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-
             if (state.isEmpty) {
                 EmptyNotes(onCreateNoteClick = onCreateNoteClick)
             } else {

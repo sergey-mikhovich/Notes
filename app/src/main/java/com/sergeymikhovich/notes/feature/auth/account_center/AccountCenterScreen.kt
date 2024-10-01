@@ -3,7 +3,6 @@ package com.sergeymikhovich.notes.feature.auth.account_center
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -144,8 +143,20 @@ private fun AccountCenterContent(
             AccountCenterButton(
                 text = "Edit profile",
                 textColor = Color(0xFF595550),
-                startIcon = Icons.Filled.Edit,
-                endIcon = Icons.AutoMirrored.Sharp.KeyboardArrowRight,
+                startIcon = {
+                    Icon(
+                        imageVector = Icons.Filled.Edit,
+                        contentDescription = "",
+                        tint = Color(0xFFD9614C)
+                    )
+                },
+                trailingIcon = {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Sharp.KeyboardArrowRight,
+                        contentDescription = "",
+                        tint = Color(0xFF595550)
+                    )
+                },
                 onClick = {}
             )
 
@@ -176,7 +187,13 @@ private fun AccountCenterContent(
                 modifier = Modifier.fillMaxWidth(),
                 text = "Sign out",
                 textColor = Color(0xFFD9614C),
-                startIcon = Icons.AutoMirrored.Filled.ExitToApp,
+                startIcon = {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ExitToApp,
+                        contentDescription = "",
+                        tint = Color(0xFFD9614C)
+                    )
+                },
                 onClick = { showSignOutAlertDialog = true }
             )
 
@@ -203,7 +220,13 @@ private fun AccountCenterContent(
                 modifier = Modifier.fillMaxWidth(),
                 text = "Delete account",
                 textColor = Color(0xFFD9614C),
-                startIcon = Icons.Filled.Delete,
+                startIcon = {
+                    Icon(
+                        imageVector = Icons.Filled.Delete,
+                        contentDescription = "",
+                        tint = Color(0xFFD9614C)
+                    )
+                },
                 onClick = { showDeleteAlertDialog = true }
             )
         }
