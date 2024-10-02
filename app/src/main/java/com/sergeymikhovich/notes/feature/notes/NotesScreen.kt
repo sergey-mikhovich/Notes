@@ -8,7 +8,6 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -33,10 +32,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.SearchBar
-import androidx.compose.material3.SearchBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -46,7 +42,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -62,6 +57,7 @@ import com.sergeymikhovich.notes.R
 import com.sergeymikhovich.notes.core.common.navigation.composableTo
 import com.sergeymikhovich.notes.core.design_system.component.AlertDialogState
 import com.sergeymikhovich.notes.core.design_system.component.AlertDialogWithState
+import com.sergeymikhovich.notes.core.design_system.component.NotesSearchBar
 import com.sergeymikhovich.notes.core.model.Note
 import com.sergeymikhovich.notes.core.model.User
 import com.sergeymikhovich.notes.feature.notes.navigation.NotesDirection
@@ -85,7 +81,6 @@ fun NotesScreen(
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun NotesContent(
     state: NotesState,
@@ -95,28 +90,14 @@ private fun NotesContent(
     onOpenNoteClick: (String) -> Unit,
     onDeleteNoteClick: (String) -> Unit
 ) {
-
-
     Scaffold(
         topBar = {
-            val context = LocalContext.current
-            var query by remember { mutableStateOf("") }
             var active by remember { mutableStateOf(false) }
-            val paddings by remember {
-                derivedStateOf {
-                    if (!active)
-                        PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp)
-                    else
-                        PaddingValues(0.dp)
-                }
-            }
 
-            SearchBar(
-                query = query,
-                onQueryChange = { query = it },
-                onSearch = {},
+            NotesSearchBar(
                 active = active,
                 onActiveChange = { active = it },
+                onSearch = {},
                 placeholder = {
                     Text(
                         text = "Search your notes",
@@ -168,14 +149,7 @@ private fun NotesContent(
                             )
                         }
                     }
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(color = Color(0xFFF8EEE2))
-                    .padding(paddings),
-                colors = SearchBarDefaults.colors(
-                    containerColor = Color(0xFFFFFDF0)
-                )
+                }
             ) {
 
             }
