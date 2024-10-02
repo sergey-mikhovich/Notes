@@ -70,7 +70,7 @@ private fun AccountCenterContent(
 ) {
     Column(
         modifier = Modifier
-            .background(color = Color(0xFFF8EEE2))
+            .background(color = Color(0xFFFFFDF0))
             .fillMaxSize()
             .padding(
                 start = 16.dp,
@@ -107,9 +107,10 @@ private fun AccountCenterContent(
 
             Text(
                 text = user.displayName.ifBlank { "Unknown" },
-                fontSize = TextUnit(28f, TextUnitType.Sp),
-                fontWeight = FontWeight.Black,
-                color = Color(0xFF403B36)
+                fontWeight = FontWeight.Medium,
+                lineHeight = TextUnit(1.4F, TextUnitType.Em),
+                fontSize = TextUnit(28F, TextUnitType.Sp),
+                color = Color(0xFF595550)
             )
 
             Spacer(
@@ -119,7 +120,9 @@ private fun AccountCenterContent(
             Text(
                 text = user.email,
                 fontSize = TextUnit(16f, TextUnitType.Sp),
-                color = Color(0xFF595550)
+                color = Color(0xFF595550),
+                fontWeight = FontWeight.Normal,
+                lineHeight = TextUnit(1.3F, TextUnitType.Em)
             )
         }
 

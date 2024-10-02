@@ -34,7 +34,7 @@ fun AuthOutLinedTextField(
         modifier = modifier
             .fillMaxWidth()
             .border(
-                BorderStroke(width = 1.dp, color = Color(0xFFF2E5D5)),
+                BorderStroke(width = 1.dp, color = Color.LightGray),
                 shape = RoundedCornerShape(12.dp)
             ),
         shape = RoundedCornerShape(12.dp),

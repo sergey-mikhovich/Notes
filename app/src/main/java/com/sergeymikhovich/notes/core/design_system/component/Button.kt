@@ -76,11 +76,11 @@ fun AuthOtherwiseButton(
     ) {
         Text(
             text = text,
-            lineHeight = TextUnit(1.4F, TextUnitType.Em),
-            fontSize = TextUnit(16F, TextUnitType.Sp),
-            fontWeight = FontWeight.ExtraBold,
             textAlign = TextAlign.Center,
-            color = Color(0xFFD9614C)
+            color = Color(0xFFD9614C),
+            fontWeight = FontWeight.Medium,
+            lineHeight = TextUnit(1.4F, TextUnitType.Em),
+            fontSize = TextUnit(16F, TextUnitType.Sp)
         )
     }
 }

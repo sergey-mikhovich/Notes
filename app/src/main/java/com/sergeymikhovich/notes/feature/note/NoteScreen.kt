@@ -64,7 +64,7 @@ private fun NoteContent(
             TopAppBar(
                 title = {},
                 windowInsets = WindowInsets.systemBars,
-                backgroundColor = Color(0xFFF8EEE2),
+                backgroundColor = Color(0xFFFFFDF0),
                 navigationIcon = {
                     IconButton(
                         onClick = onBackClick
@@ -100,7 +100,7 @@ private fun NoteContent(
         Column(
             modifier = Modifier
                 .padding(paddingValues)
-                .background(color = Color(0xFFF8EEE2))
+                .background(color = Color(0xFFFFFDF0))
                 .fillMaxSize()
                 .verticalScroll(state = rememberScrollState())
                 .padding(
@@ -113,16 +113,16 @@ private fun NoteContent(
 
             NoteBasicTextField(
                 textStyle = TextStyle(
-                    fontSize = TextUnit(24f, TextUnitType.Sp),
-                    fontWeight = FontWeight.ExtraBold,
-                    lineHeight = TextUnit(1.2F, TextUnitType.Em),
+                    fontWeight = FontWeight.Medium,
+                    lineHeight = TextUnit(1.4F, TextUnitType.Em),
+                    fontSize = TextUnit(24F, TextUnitType.Sp),
                     color = Color(0xFF595550)
                 ),
                 placeholderText = "Title",
                 placeHolderStyle = TextStyle(
-                    fontSize = TextUnit(24f, TextUnitType.Sp),
-                    fontWeight = FontWeight.ExtraBold,
-                    lineHeight = TextUnit(1.2F, TextUnitType.Em),
+                    fontWeight = FontWeight.Medium,
+                    lineHeight = TextUnit(1.4F, TextUnitType.Em),
+                    fontSize = TextUnit(24F, TextUnitType.Sp),
                     color = Color(0x51403B36)
                 ),
                 value = state.title,
@@ -133,15 +133,15 @@ private fun NoteContent(
                 modifier = Modifier.padding(top = 16.dp),
                 textStyle = TextStyle(
                     fontSize = TextUnit(16f, TextUnitType.Sp),
-                    fontWeight = FontWeight.Medium,
-                    lineHeight = TextUnit(1.3F, TextUnitType.Em),
-                    color = Color(0xFF595550)
+                    color = Color(0xFF595550),
+                    fontWeight = FontWeight.Normal,
+                    lineHeight = TextUnit(1.3F, TextUnitType.Em)
                 ),
                 placeholderText = "Description",
                 placeHolderStyle = TextStyle(
                     fontSize = TextUnit(16f, TextUnitType.Sp),
-                    fontWeight = FontWeight.Bold,
-                    lineHeight = TextUnit(1.4F, TextUnitType.Em),
+                    fontWeight = FontWeight.Normal,
+                    lineHeight = TextUnit(1.3F, TextUnitType.Em),
                     color = Color(0x51595550)
                 ),
                 value = state.description,

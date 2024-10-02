@@ -66,7 +66,7 @@ private fun SignInContent(
 ) {
     Column(
         modifier = Modifier
-            .background(color = Color(0xFFF8EEE2))
+            .background(color = Color(0xFFFFFDF0))
             .padding(
                 start = 16.dp,
                 top = 32.dp,

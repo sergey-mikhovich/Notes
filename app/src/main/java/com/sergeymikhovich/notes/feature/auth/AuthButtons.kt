@@ -43,7 +43,7 @@ fun AuthenticationButton(
             .fillMaxWidth()
             .height(54.dp),
         shape = RoundedCornerShape(12.dp),
-        border = BorderStroke(1.dp, Color(0xFFC8C5CB)),
+        border = BorderStroke(1.dp, Color.LightGray),
         colors = ButtonDefaults.buttonColors(
             backgroundColor = Color.White
         ),

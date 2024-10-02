@@ -61,7 +61,8 @@ fun NotesTheme(
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            window.statusBarColor = Color(0xFFF8EEE2).toArgb()
+            window.statusBarColor = Color(0xFFFFFDF0).toArgb()
+            window.navigationBarColor = Color(0xFFFFFDF0).toArgb()
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
         }
     }

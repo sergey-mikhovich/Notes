@@ -60,7 +60,8 @@ fun NotesSearchBar(
     }
 
     StatusBarColorChanger(
-        statusBarColor = if (active) Color(0xFFFFFDF0) else Color(0xFFF8EEE2),
+        statusBarColor = if (active) Color(0xFFF5E9D3) else Color(0xFFFFFDF0),
+        navigationBarColor = if (active) Color(0xFFF5E9D3) else Color(0xFFFFFDF0),
         isLightIcons = true
     )
 
@@ -75,12 +76,12 @@ fun NotesSearchBar(
         trailingIcon = trailingIcon,
         modifier = modifier
             .fillMaxWidth()
-            .background(color = Color(0xFFF8EEE2))
+            .background(color = Color(0xFFFFFDF0))
             .then(
                 Modifier.padding(paddings)
             ),
         colors = SearchBarDefaults.colors(
-            containerColor = Color(0xFFFFFDF0)
+            containerColor = Color(0xFFF5E9D3)
         ),
         content = content
     )

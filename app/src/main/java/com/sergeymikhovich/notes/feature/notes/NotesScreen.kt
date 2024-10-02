@@ -3,6 +3,7 @@ package com.sergeymikhovich.notes.feature.notes
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
@@ -175,7 +176,7 @@ private fun NotesContent(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(color = Color(0xFFF8EEE2))
+                .background(color = Color(0xFFFFFDF0))
                 .padding(paddingValues)
         ) {
             if (state.isEmpty) {
@@ -308,10 +309,11 @@ fun NoteCard(
     }
     Column(
         modifier = Modifier
-            .padding(16.dp, 0.dp, 16.dp, 8.dp)
+            .padding(8.dp, 0.dp, 8.dp, 8.dp)
             .fillMaxWidth()
             .wrapContentHeight()
             .clip(RoundedCornerShape(12.dp))
+            .border(1.dp, Color.LightGray, RoundedCornerShape(12.dp))
             .combinedClickable(
                 onClick = onOpenNoteClick,
                 onLongClick = { showDeleteAlertDialog = true }
@@ -320,20 +322,23 @@ fun NoteCard(
                 color = Color(0xFFFFFDF0),
                 shape = RoundedCornerShape(12.dp)
             )
-            .padding(12.dp)
+            .padding(16.dp)
     ) {
         Text(
-            modifier = Modifier.padding(bottom = 16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp, bottom = 16.dp),
             text = title,
-            fontSize = TextUnit(18f, TextUnitType.Sp),
-            fontWeight = FontWeight.ExtraBold,
-            color = Color(0xFF595550)
+            color = Color(0xFF403B36),
+            fontWeight = FontWeight.Medium,
+            lineHeight = TextUnit(1.4F, TextUnitType.Em),
+            fontSize = TextUnit(18F, TextUnitType.Sp)
         )
         Text(
             text = description,
-            fontSize = TextUnit(14f, TextUnitType.Sp),
-            fontWeight = FontWeight.Medium,
-            lineHeight = TextUnit(1.3f, TextUnitType.Em),
+            lineHeight = TextUnit(1.4F, TextUnitType.Em),
+            fontWeight = FontWeight.Normal,
+            fontSize = TextUnit(15F, TextUnitType.Sp),
             color = Color(0xFF595550)
         )
     }
