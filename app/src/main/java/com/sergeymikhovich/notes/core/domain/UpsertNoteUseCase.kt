@@ -1,23 +1,30 @@
 package com.sergeymikhovich.notes.core.domain
 
+import com.github.michaelbull.result.Err
+import com.github.michaelbull.result.Ok
+import com.github.michaelbull.result.Result
+import com.github.michaelbull.result.andThen
+import com.github.michaelbull.result.andThenRecover
 import com.sergeymikhovich.notes.core.data.repository.NoteRepository
+import com.sergeymikhovich.notes.core.domain.UpsertResult.Error
+import com.sergeymikhovich.notes.core.domain.UpsertResult.Success
 import com.sergeymikhovich.notes.core.model.Note
 import javax.inject.Inject
 
-sealed interface UpsertNoteResult {
-    data object Success : UpsertNoteResult
-    data object EmptyNote : UpsertNoteResult
-    data object Fail : UpsertNoteResult
+sealed interface UpsertResult {
+    data object Success : UpsertResult
+    data object EmptyNote : UpsertResult
+    data object Error : UpsertResult
 }
 
 class UpsertNoteUseCase @Inject constructor(
     private val noteRepository: NoteRepository
 ) {
+    suspend operator fun invoke(note: Note): Result<UpsertResult, Throwable> {
+        if (note.isEmpty()) return Ok(UpsertResult.EmptyNote)
 
-    suspend operator fun invoke(note: Note): UpsertNoteResult {
-        if (note.isEmpty()) return UpsertNoteResult.EmptyNote
-
-        val addedNote = noteRepository.upsert(note)
-        return if (addedNote != null) UpsertNoteResult.Success else UpsertNoteResult.Fail
+        return noteRepository.upsert(note)
+            .andThen { if (it != null) Ok(Success) else Ok(Error) }
+            .andThenRecover { Err(it) }
     }
 }

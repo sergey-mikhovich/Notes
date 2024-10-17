@@ -25,6 +25,7 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.FloatingActionButton
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
@@ -32,7 +33,6 @@ import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -95,64 +95,70 @@ private fun NotesContent(
         topBar = {
             var active by remember { mutableStateOf(false) }
 
-            NotesSearchBar(
-                active = active,
-                onActiveChange = { active = it },
-                onSearch = {},
-                placeholder = {
-                    Text(
-                        text = "Search your notes",
-                        fontSize = TextUnit(16f, TextUnitType.Sp),
-                        fontWeight = FontWeight.Normal
-                    )
-                },
-                leadingIcon = {
-                    if (!active) {
-                        IconButton(onClick = {}) {
-                            Icon(
-                                imageVector = Icons.Filled.Menu,
-                                contentDescription = ""
-                            )
+            Column{
+                LinearProgressIndicator(
+                    modifier = Modifier.fillMaxWidth().background(Color(0xFFFFFDF0)),
+                    color = if (state.isLoading) Color(0xFFD9614C) else Color(0xFFFFFDF0)
+                )
+                NotesSearchBar(
+                    active = active,
+                    onActiveChange = { active = it },
+                    onSearch = {},
+                    placeholder = {
+                        Text(
+                            text = "Search your notes",
+                            fontSize = TextUnit(16f, TextUnitType.Sp),
+                            fontWeight = FontWeight.Normal
+                        )
+                    },
+                    leadingIcon = {
+                        if (!active) {
+                            IconButton(onClick = {}) {
+                                Icon(
+                                    imageVector = Icons.Filled.Menu,
+                                    contentDescription = ""
+                                )
+                            }
+                        } else {
+                            IconButton(
+                                onClick = { active = false }
+                            ) {
+                                Icon(
+                                    imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                    contentDescription = ""
+                                )
+                            }
                         }
-                    } else {
-                        IconButton(
-                            onClick = { active = false }
-                        ) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = ""
-                            )
-                        }
-                    }
-                },
-                trailingIcon = {
-                    if (!active) {
-                        var iconSize by remember { mutableStateOf(24.dp) }
-                        Box(
-                            modifier = Modifier
-                                .size(48.dp)
-                                .clip(CircleShape)
-                                .clickable(onClick = onAccountCenterClick),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            AsyncImage(
-                                model = user.photoUri,
-                                contentDescription = "",
-                                placeholder = rememberVectorPainter(image = Icons.Filled.Person),
-                                error = rememberVectorPainter(image = Icons.Filled.Person),
-                                fallback = rememberVectorPainter(image = Icons.Filled.Person),
-                                onSuccess = { iconSize = 32.dp },
-                                onLoading = { iconSize = 24.dp },
-                                onError = { iconSize = 24.dp },
+                    },
+                    trailingIcon = {
+                        if (!active) {
+                            var iconSize by remember { mutableStateOf(24.dp) }
+                            Box(
                                 modifier = Modifier
-                                    .size(iconSize)
+                                    .size(48.dp)
                                     .clip(CircleShape)
-                            )
+                                    .clickable(onClick = onAccountCenterClick),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                AsyncImage(
+                                    model = user.photoUri,
+                                    contentDescription = "",
+                                    placeholder = rememberVectorPainter(image = Icons.Filled.Person),
+                                    error = rememberVectorPainter(image = Icons.Filled.Person),
+                                    fallback = rememberVectorPainter(image = Icons.Filled.Person),
+                                    onSuccess = { iconSize = 32.dp },
+                                    onLoading = { iconSize = 24.dp },
+                                    onError = { iconSize = 24.dp },
+                                    modifier = Modifier
+                                        .size(iconSize)
+                                        .clip(CircleShape)
+                                )
+                            }
                         }
                     }
-                }
-            ) {
+                ) {
 
+                }
             }
         },
         floatingActionButton = {

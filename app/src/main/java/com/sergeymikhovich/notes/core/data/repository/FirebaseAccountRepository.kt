@@ -1,7 +1,5 @@
 package com.sergeymikhovich.notes.core.data.repository
 
-import android.util.Log
-import com.google.firebase.auth.EmailAuthProvider
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.auth.ktx.auth
@@ -9,6 +7,7 @@ import com.google.firebase.ktx.Firebase
 import com.sergeymikhovich.notes.core.common.di.ApplicationScope
 import com.sergeymikhovich.notes.core.common.di.Dispatcher
 import com.sergeymikhovich.notes.core.common.di.NoteDispatchers
+import com.sergeymikhovich.notes.core.common.error_handling.runSuspendCatchingUnit
 import com.sergeymikhovich.notes.core.data.mapper.AccountMapper
 import com.sergeymikhovich.notes.core.model.User
 import kotlinx.coroutines.CoroutineDispatcher
@@ -17,7 +16,6 @@ import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
@@ -43,38 +41,46 @@ class FirebaseAccountRepository @Inject constructor(
     override fun getUserProfile(): User =
         accountMapper.firebaseToDomainUser(Firebase.auth.currentUser)
 
-    override suspend fun createAnonymousAccount() {
-        withContext(context) {
-            Firebase.auth.signInAnonymously().await()
+    override suspend fun createAnonymousAccount() =
+        runSuspendCatchingUnit {
+            withContext(context) {
+                Firebase.auth.signInAnonymously().await()
+            }
         }
-    }
 
-    override suspend fun createAccountWithEmailAndPassword(email: String, password: String) {
-        withContext(context) {
-            Firebase.auth.createUserWithEmailAndPassword(email, password).await()
+    override suspend fun createAccountWithEmailAndPassword(email: String, password: String) =
+        runSuspendCatchingUnit {
+            withContext(context) {
+                Firebase.auth.createUserWithEmailAndPassword(email, password).await()
+            }
         }
-    }
 
-    override suspend fun signInWithGoogle(idToken: String) {
-        withContext(context) {
-            val firebaseCredential = GoogleAuthProvider.getCredential(idToken, null)
-            Firebase.auth.signInWithCredential(firebaseCredential).await()
+    override suspend fun signInWithGoogle(idToken: String) =
+        runSuspendCatchingUnit {
+            withContext(context) {
+                val firebaseCredential = GoogleAuthProvider.getCredential(idToken, null)
+                Firebase.auth.signInWithCredential(firebaseCredential).await()
+            }
         }
-    }
 
-    override suspend fun signInWithEmailAndPassword(email: String, password: String) {
-        withContext(context) {
-            Firebase.auth.signInWithEmailAndPassword(email, password).await()
+    override suspend fun signInWithEmailAndPassword(email: String, password: String) =
+        runSuspendCatchingUnit {
+            withContext(context) {
+                Firebase.auth.signInWithEmailAndPassword(email, password).await()
+            }
         }
-    }
 
-    override suspend fun signOut() = withContext(context) {
-        Firebase.auth.signOut()
-    }
-
-    override suspend fun deleteAccount() {
-        withContext(context) {
-            Firebase.auth.currentUser!!.delete().await()
+    override suspend fun signOut() =
+        runSuspendCatchingUnit {
+            withContext(context) {
+                Firebase.auth.signOut()
+            }
         }
-    }
+
+    override suspend fun deleteAccount() =
+        runSuspendCatchingUnit {
+            withContext(context) {
+                Firebase.auth.currentUser!!.delete().await()
+            }
+        }
 }

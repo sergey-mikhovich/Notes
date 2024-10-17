@@ -1,10 +1,6 @@
 package com.sergeymikhovich.notes.core.data
 
-import android.util.Log
-import com.sergeymikhovich.notes.core.database.model.ChangeNoteEntity
 import com.sergeymikhovich.notes.core.model.ChangeNote
-import com.sergeymikhovich.notes.core.network.model.NetworkChangeNote
-import kotlin.coroutines.cancellation.CancellationException
 
 interface Syncronizer {
     suspend fun Syncable.sync() = this@sync.syncWith(this@Syncronizer)
@@ -12,19 +8,6 @@ interface Syncronizer {
 
 interface Syncable {
     suspend fun syncWith(syncronizer: Syncronizer): Boolean
-}
-
-private suspend fun <T> suspendRunCatching(block: suspend () -> T): Result<T> = try {
-    Result.success(block())
-} catch (cancellationException: CancellationException) {
-    throw cancellationException
-} catch (exception: Exception) {
-    Log.i(
-        "suspendRunCatching",
-        "Failed to evaluate a suspendRunCatchingBlock. Returning failure result",
-        exception
-    )
-    Result.failure(exception)
 }
 
 suspend fun Syncronizer.changeListSync(
@@ -38,8 +21,7 @@ suspend fun Syncronizer.changeListSync(
     remoteModelUpdater: suspend (List<String>) -> Unit,
     localChangeListUpdater: suspend (Long) -> Unit,
     remoteChangeListUpdater: suspend (Long) -> Unit
-) = suspendRunCatching {
-
+) {
     val lastLocalSyncTime = localSyncTimeReader()
     val lastRemoteSyncTime = remoteSyncTimeReader()
 
@@ -51,7 +33,7 @@ suspend fun Syncronizer.changeListSync(
         else
             localChangeListFetcher(lastRemoteSyncTime)
 
-    if (changeList.isEmpty()) return@suspendRunCatching
+    if (changeList.isEmpty()) return
 
     val (deleted, updated) = changeList.partition(ChangeNote::deleted)
 
@@ -64,4 +46,4 @@ suspend fun Syncronizer.changeListSync(
         remoteModelUpdater(updated.map(ChangeNote::id))
         remoteChangeListUpdater(lastRemoteSyncTime)
     }
-}.isSuccess
+}

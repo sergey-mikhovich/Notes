@@ -1,4 +1,4 @@
-package com.sergeymikhovich.notes.core.common.extentions
+package com.sergeymikhovich.notes.core.common.error_handling
 
 import android.util.Patterns
 import java.util.regex.Pattern
@@ -16,4 +16,8 @@ fun String.isValidPassword(): Boolean {
     return this.isNotBlank() &&
             this.length >= MIN_PASS_LENGTH &&
             Pattern.compile(PASS_PATTERN).matcher(this).matches()
+}
+
+fun String.isPasswordConfirmed(password: String): Boolean {
+    return this.isNotBlank() && password.isNotBlank() && this == password
 }

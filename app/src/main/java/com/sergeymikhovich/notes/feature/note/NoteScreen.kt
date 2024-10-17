@@ -125,7 +125,7 @@ private fun NoteContent(
                     fontSize = TextUnit(24F, TextUnitType.Sp),
                     color = Color(0x51403B36)
                 ),
-                value = state.title,
+                value = state.data.title,
                 onValueChange = onTitleChanged
             )
 
@@ -144,7 +144,7 @@ private fun NoteContent(
                     lineHeight = TextUnit(1.3F, TextUnitType.Em),
                     color = Color(0x51595550)
                 ),
-                value = state.description,
+                value = state.data.description,
                 onValueChange = onDescriptionChanged
             )
         }
@@ -158,8 +158,10 @@ private fun NoteContent(
 fun NotePreview() {
     NoteContent(
         state = NoteState(
-            title = "My first title",
-            description = "To create this note I needed to mark item as failed to rewrite it",
+            data = Data(
+                title = "My first title",
+                description = "To create this note I needed to mark item as failed to rewrite it"
+            )
         ),
         onTitleChanged = {},
         onDescriptionChanged = {},

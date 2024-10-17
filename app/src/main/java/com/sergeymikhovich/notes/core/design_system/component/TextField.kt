@@ -1,15 +1,15 @@
 package com.sergeymikhovich.notes.core.design_system.component
 
-import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material.OutlinedTextField
+import androidx.compose.foundation.text.selection.TextSelectionColors
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,25 +26,27 @@ fun AuthOutLinedTextField(
     value: String,
     singleLine: Boolean = true,
     onValueChange: (String) -> Unit,
-    placeholderText: String
-
+    placeholderText: String,
+    isError: Boolean = false,
+    supportingText: String = ""
 ) {
     OutlinedTextField(
         singleLine = singleLine,
-        modifier = modifier
-            .fillMaxWidth()
-            .border(
-                BorderStroke(width = 1.dp, color = Color.LightGray),
-                shape = RoundedCornerShape(12.dp)
-            ),
+        modifier = modifier.fillMaxWidth(),
         shape = RoundedCornerShape(12.dp),
-        colors = TextFieldDefaults.textFieldColors(
-            backgroundColor = Color(0xFFFFFDFA),
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedContainerColor = Color(0xFFFFFDFA),
+            unfocusedContainerColor = Color(0xFFFFFDFA),
+            unfocusedBorderColor = Color.LightGray,
+            focusedBorderColor = Color(0xFFD9614C),
+            cursorColor = Color(0xFF403B36),
+            selectionColors = TextSelectionColors(
+                handleColor = Color(0xFFD9614C),
+                backgroundColor = Color(0xFFD9614C)
+            )
         ),
         value = value,
-        onValueChange = onValueChange ,
+        onValueChange = onValueChange,
         placeholder = {
             Text(
                 text = placeholderText,
@@ -55,6 +57,15 @@ fun AuthOutLinedTextField(
                     color = Color(0xFFC8C5CB),
                 )
             )
+        },
+        supportingText = {
+            if (isError) {
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = supportingText,
+                    color = MaterialTheme.colors.error
+                )
+            }
         }
     )
 }
@@ -98,7 +109,9 @@ private fun AuthOutLinedTextFieldPreview() {
     AuthOutLinedTextField(
         value = "",
         onValueChange = {},
-        placeholderText = "sergey.mikhovich@gmail.com"
+        placeholderText = "sergey.mikhovich@gmail.com",
+        isError = true,
+        supportingText = "Invalid email"
     )
 }
 

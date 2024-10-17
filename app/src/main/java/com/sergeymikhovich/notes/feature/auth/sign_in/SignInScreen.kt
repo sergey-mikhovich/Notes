@@ -1,5 +1,6 @@
 package com.sergeymikhovich.notes.feature.auth.sign_in
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -10,11 +11,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -23,6 +27,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
 import com.sergeymikhovich.notes.R
+import com.sergeymikhovich.notes.core.common.error_handling.isInvalidEmail
+import com.sergeymikhovich.notes.core.common.error_handling.isInvalidPassword
 import com.sergeymikhovich.notes.core.common.navigation.composableTo
 import com.sergeymikhovich.notes.core.design_system.component.AuthButton
 import com.sergeymikhovich.notes.core.design_system.component.AuthDescriptionText
@@ -40,12 +46,18 @@ fun NavGraphBuilder.composableToSignIn() = composableTo(SignInDirection) { SignI
 fun SignInScreen(
     viewModel: SignInViewModel = hiltViewModel()
 ) {
-    val email by viewModel.email.collectAsStateWithLifecycle()
-    val password by viewModel.password.collectAsStateWithLifecycle()
+    val state by viewModel.state.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+
+    LaunchedEffect(state) {
+        if (state.error.isNotBlank()){
+            Toast.makeText(context, state.error, Toast.LENGTH_SHORT).show()
+            viewModel.toastShown()
+        }
+    }
 
     SignInContent(
-        email = email,
-        password = password,
+        state = state,
         updateEmail = viewModel::updateEmail,
         updatePassword = viewModel::updatePassword,
         onSignInClick = viewModel::onSignInClick,
@@ -56,8 +68,7 @@ fun SignInScreen(
 
 @Composable
 private fun SignInContent(
-    email: String,
-    password: String,
+    state: SignInUiState,
     updateEmail: (String) -> Unit,
     updatePassword: (String) -> Unit,
     onSignInClick: () -> Unit,
@@ -65,75 +76,87 @@ private fun SignInContent(
     onSignUpClick: () -> Unit
 ) {
     Column(
-        modifier = Modifier
-            .background(color = Color(0xFFFFFDF0))
-            .padding(
-                start = 16.dp,
-                top = 32.dp,
-                end = 16.dp
-            )
-            .fillMaxSize()
-            .verticalScroll(rememberScrollState()),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
+        modifier = Modifier.fillMaxSize()
     ) {
-        Column(modifier = Modifier.fillMaxWidth()) {
-            AuthTitleText(text = "Let's Login")
-            Spacer(modifier = Modifier.height(16.dp))
-            AuthDescriptionText(text = "And notes your idea")
-        }
-
-        Spacer(modifier = Modifier.height(32.dp))
-
-        Column(modifier = Modifier.fillMaxWidth()) {
-            Column(modifier = Modifier.fillMaxWidth()) {
-                AuthOutlinedButtonText(text = stringResource(R.string.email))
-                Spacer(modifier = Modifier.height(12.dp))
-
-                AuthOutLinedTextField(
-                    value = email,
-                    onValueChange = updateEmail,
-                    placeholderText = "sergey.mikhovich@gmail.com"
+        LinearProgressIndicator(
+            modifier = Modifier.fillMaxWidth().background(Color(0xFFFFFDF0)),
+            color = if (state.isLoading) Color(0xFFD9614C) else Color(0xFFFFFDF0)
+        )
+        Column(
+            modifier = Modifier
+                .background(color = Color(0xFFFFFDF0))
+                .padding(
+                    start = 16.dp,
+                    top = 32.dp,
+                    end = 16.dp
                 )
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Column(modifier = Modifier.fillMaxWidth()) {
+                AuthTitleText(text = "Let's Login")
+                Spacer(modifier = Modifier.height(16.dp))
+                AuthDescriptionText(text = "And notes your idea")
             }
 
-            Spacer(modifier = Modifier.height(12.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
             Column(modifier = Modifier.fillMaxWidth()) {
-                AuthOutlinedButtonText(text = stringResource(R.string.password))
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    AuthOutlinedButtonText(text = stringResource(R.string.email))
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    AuthOutLinedTextField(
+                        value = state.data.email,
+                        onValueChange = updateEmail,
+                        placeholderText = "sergey.mikhovich@gmail.com",
+                        isError = state.data.typingErrors.isInvalidEmail(),
+                        supportingText = if (state.data.email.isBlank()) "Required field" else "Invalid email"
+                    )
+                }
+
                 Spacer(modifier = Modifier.height(12.dp))
 
-                AuthOutLinedTextField(
-                    value = password,
-                    onValueChange = updatePassword,
-                    placeholderText = "********"
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    AuthOutlinedButtonText(text = stringResource(R.string.password))
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    AuthOutLinedTextField(
+                        value = state.data.password,
+                        onValueChange = updatePassword,
+                        placeholderText = "∗∗∗∗∗∗∗∗",
+                        isError = state.data.typingErrors.isInvalidPassword(),
+                        supportingText = if (state.data.password.isBlank()) "Required field" else "Invalid password"
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(40.dp))
+
+            Column(modifier = Modifier.fillMaxWidth()) {
+                AuthButton(
+                    onClick = onSignInClick,
+                    text = stringResource(R.string.sign_in)
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+                WithTextCenteredDivider(centeredText = stringResource(R.string.or))
+                Spacer(modifier = Modifier.height(16.dp))
+
+                AuthenticationButton(
+                    buttonText = R.string.sign_in_with_google,
+                    onGetCredentialResponse = onSignInWithGoogle
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                AuthOtherwiseButton(
+                    text = "Don't have any account? Register here",
+                    onClick = onSignUpClick
                 )
             }
-        }
-
-        Spacer(modifier = Modifier.height(40.dp))
-
-        Column(modifier = Modifier.fillMaxWidth()) {
-            AuthButton(
-                onClick = onSignInClick,
-                text = stringResource(R.string.sign_in)
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-            WithTextCenteredDivider(centeredText = stringResource(R.string.or))
-            Spacer(modifier = Modifier.height(16.dp))
-
-            AuthenticationButton(
-                buttonText = R.string.sign_in_with_google,
-                onGetCredentialResponse = onSignInWithGoogle
-            )
-
-            Spacer(modifier = Modifier.height(12.dp))
-
-            AuthOtherwiseButton(
-                text = "Don't have any account? Register here",
-                onClick = onSignUpClick
-            )
         }
     }
 }
@@ -142,8 +165,7 @@ private fun SignInContent(
 @Composable
 private fun SignInScreenPreview() {
     SignInContent(
-        email = "",
-        password = "",
+        state = SignInUiState(),
         updateEmail = {},
         updatePassword = {},
         onSignInClick = {},

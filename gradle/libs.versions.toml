@@ -28,6 +28,7 @@ androidxDataStore = "1.0.0"
 protobufPlugin = "0.9.4"
 protobuf = "3.25.2"
 coil = "2.7.0"
+kotlin-result_v = "2.0.0"
 
 [libraries]
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
@@ -75,6 +76,8 @@ androidx-dataStore = { group = "androidx.datastore", name = "datastore", version
 protobuf-protoc = { group = "com.google.protobuf", name = "protoc", version.ref = "protobuf" }
 protobuf-kotlin-lite = { group = "com.google.protobuf", name = "protobuf-kotlin-lite", version.ref = "protobuf" }
 coil-compose = { group = "io.coil-kt", name = "coil-compose", version.ref = "coil"}
+kotlin-result = { group = "com.michael-bull.kotlin-result", name = "kotlin-result", version.ref = "kotlin-result_v" }
+kotlin-result-coroutines = { group = "com.michael-bull.kotlin-result", name = "kotlin-result-coroutines", version.ref = "kotlin-result_v" }
 
 [plugins]
 androidApplication = { id = "com.android.application", version.ref = "agp" }

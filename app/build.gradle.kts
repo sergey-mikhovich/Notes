@@ -116,6 +116,8 @@ dependencies {
     implementation(libs.androidx.dataStore)
     implementation(libs.protobuf.kotlin.lite)
     implementation(libs.coil.compose)
+    implementation(libs.kotlin.result)
+    implementation(libs.kotlin.result.coroutines)
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.hamcrest)
