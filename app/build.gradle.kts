@@ -5,7 +5,6 @@ plugins {
     alias(libs.plugins.hiltAndroid)
     alias(libs.plugins.googleServices)
     alias(libs.plugins.kotlin.serialization)
-    alias(libs.plugins.protobuf)
     id("kotlin-parcelize")
 }
 
@@ -55,25 +54,6 @@ android {
     }
 }
 
-protobuf {
-    protoc {
-        artifact = libs.protobuf.protoc.get().toString()
-    }
-
-    generateProtoTasks {
-        all().forEach { task ->
-            task.builtins {
-                register("java") {
-                    option("lite")
-                }
-                register("kotlin") {
-                    option("lite")
-                }
-            }
-        }
-    }
-}
-
 ksp {
     arg(RoomSchemaArgProvider(File(projectDir, "schemas")))
 }
@@ -114,10 +94,11 @@ dependencies {
     implementation(libs.workmanager)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.androidx.dataStore)
-    implementation(libs.protobuf.kotlin.lite)
     implementation(libs.coil.compose)
     implementation(libs.kotlin.result)
     implementation(libs.kotlin.result.coroutines)
+    implementation(libs.androidx.dataStore)
+    implementation(libs.accompanist.permissions)
     testImplementation(libs.junit)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(libs.hamcrest)
