@@ -26,9 +26,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
 import com.sergeymikhovich.notes.R
-import com.sergeymikhovich.notes.core.common.error_handling.arePasswordsNotMatch
-import com.sergeymikhovich.notes.core.common.error_handling.isInvalidEmail
-import com.sergeymikhovich.notes.core.common.error_handling.isInvalidPassword
 import com.sergeymikhovich.notes.core.common.navigation.composableTo
 import com.sergeymikhovich.notes.core.design_system.component.AuthButton
 import com.sergeymikhovich.notes.core.design_system.component.AuthDescriptionText
@@ -45,41 +42,49 @@ fun SignUpScreen(
     viewModel: SignUpViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val context = LocalContext.current
+    val signUpState = state.signUpState
 
-    LaunchedEffect(state) {
-        if (state.error.isNotBlank()){
-            Toast.makeText(context, state.error, Toast.LENGTH_SHORT).show()
-            viewModel.toastShown()
-        }
+    if (signUpState is SignUpState.Content) {
+        SignUpContent(
+            signUpContent = signUpState,
+            updateEmail = viewModel::updateEmail,
+            updatePassword = viewModel::updatePassword,
+            updateConfirmPassword = viewModel::updateConfirmPassword,
+            onSignUpClick = viewModel::onSignUpClick,
+            onSignInClick = viewModel::toSignIn,
+            onToastShown = viewModel::toastShown
+        )
     }
-
-    SignUpContent(
-        state = state,
-        updateEmail = viewModel::updateEmail,
-        updatePassword = viewModel::updatePassword,
-        updateConfirmPassword = viewModel::updateConfirmPassword,
-        onSignUpClick = viewModel::onSignUpClick,
-        onSignInClick = viewModel::toSignIn
-    )
 }
 
 @Composable
 private fun SignUpContent(
-    state: SignUpUiState,
+    signUpContent: SignUpState.Content,
     updateEmail: (String) -> Unit,
     updatePassword: (String) -> Unit,
     updateConfirmPassword: (String) -> Unit,
     onSignUpClick: () -> Unit,
-    onSignInClick: () -> Unit
+    onSignInClick: () -> Unit,
+    onToastShown: () -> Unit
 ) {
+    val context = LocalContext.current
+
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
         LinearProgressIndicator(
             modifier = Modifier.fillMaxWidth().background(Color(0xFFFFFDF0)),
-            color = if (state.isLoading) Color(0xFFD9614C) else Color(0xFFFFFDF0)
+            color = if (signUpContent.contentState.isLoading)
+                Color(0xFFD9614C) else Color(0xFFFFFDF0)
         )
+
+        LaunchedEffect(signUpContent.userMessage) {
+            if (signUpContent.userMessage.isNotBlank()){
+                Toast.makeText(context, signUpContent.userMessage, Toast.LENGTH_SHORT).show()
+                onToastShown()
+            }
+        }
+
         Column(
             modifier = Modifier
                 .background(color = Color(0xFFFFFDF0))
@@ -106,11 +111,11 @@ private fun SignUpContent(
                     Spacer(modifier = Modifier.height(12.dp))
 
                     AuthOutLinedTextField(
-                        value = state.data.email,
+                        value = signUpContent.email,
                         onValueChange = updateEmail,
                         placeholderText = "sergey.mikhovich@gmail.com",
-                        isError = state.data.typingErrors.isInvalidEmail(),
-                        supportingText = if(state.data.email.isBlank()) "Required field" else "Invalid email"
+                        isError = signUpContent.contentState.isInvalidEmail,
+                        supportingText = if(signUpContent.email.isBlank()) "Required field" else "Invalid email"
                     )
                 }
 
@@ -120,11 +125,11 @@ private fun SignUpContent(
                     AuthOutlinedButtonText(text = stringResource(R.string.password))
                     Spacer(modifier = Modifier.height(12.dp))
                     AuthOutLinedTextField(
-                        value = state.data.password,
+                        value = signUpContent.password,
                         onValueChange = updatePassword,
                         placeholderText = "∗∗∗∗∗∗∗∗",
-                        isError = state.data.typingErrors.isInvalidPassword(),
-                        supportingText = if (state.data.password.isBlank()) "Required field" else "Invalid password"
+                        isError = signUpContent.contentState.isInvalidPassword,
+                        supportingText = if (signUpContent.password.isBlank()) "Required field" else "Invalid password"
                     )
                 }
 
@@ -135,11 +140,11 @@ private fun SignUpContent(
                     Spacer(modifier = Modifier.height(12.dp))
 
                     AuthOutLinedTextField(
-                        value = state.data.confirmPassword,
+                        value = signUpContent.confirmPassword,
                         onValueChange = updateConfirmPassword,
                         placeholderText = "∗∗∗∗∗∗∗∗",
-                        isError = state.data.typingErrors.arePasswordsNotMatch(),
-                        supportingText = if (state.data.confirmPassword.isBlank()) "Required field" else "Passwords don't match"
+                        isError = signUpContent.contentState.arePasswordsNotMatch,
+                        supportingText = if (signUpContent.confirmPassword.isBlank()) "Required field" else "Passwords don't match"
                     )
                 }
             }
@@ -163,11 +168,12 @@ private fun SignUpContent(
 @Composable
 private fun SignUpScreenPreview() {
     SignUpContent(
-        state = SignUpUiState(),
+        signUpContent = SignUpState.Content(),
         updateEmail = {},
         updatePassword = {},
         updateConfirmPassword = {},
         onSignUpClick = {},
-        onSignInClick = {}
+        onSignInClick = {},
+        onToastShown = {}
     )
 }

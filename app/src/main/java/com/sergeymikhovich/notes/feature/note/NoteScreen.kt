@@ -42,19 +42,25 @@ fun NavGraphBuilder.composeToNote() = composableTo(NoteDirection) { NoteScreen()
 fun NoteScreen(
     viewModel: NoteViewModel = hiltViewModel()
 ) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
+    val screenState by viewModel.state.collectAsStateWithLifecycle()
 
-    NoteContent(
-        state = state,
-        onTitleChanged = viewModel::changeTitle,
-        onDescriptionChanged = viewModel::changeDescription,
-        onBackClick = viewModel::saveNote
-    )
+    when (val noteState = screenState.noteState) {
+        is NoteState.Error -> {
+        }
+        is NoteState.Content -> {
+            NoteContent(
+                noteState = noteState,
+                onTitleChanged = viewModel::changeTitle,
+                onDescriptionChanged = viewModel::changeDescription,
+                onBackClick = viewModel::saveNote
+            )
+        }
+    }
 }
 
 @Composable
 private fun NoteContent(
-    state: NoteState,
+    noteState: NoteState.Content,
     onTitleChanged: (String) -> Unit,
     onDescriptionChanged: (String) -> Unit,
     onBackClick: () -> Unit
@@ -125,7 +131,7 @@ private fun NoteContent(
                     fontSize = TextUnit(24F, TextUnitType.Sp),
                     color = Color(0x51403B36)
                 ),
-                value = state.data.title,
+                value = noteState.title,
                 onValueChange = onTitleChanged
             )
 
@@ -144,7 +150,7 @@ private fun NoteContent(
                     lineHeight = TextUnit(1.3F, TextUnitType.Em),
                     color = Color(0x51595550)
                 ),
-                value = state.data.description,
+                value = noteState.description,
                 onValueChange = onDescriptionChanged
             )
         }
@@ -157,11 +163,9 @@ private fun NoteContent(
 @Composable
 fun NotePreview() {
     NoteContent(
-        state = NoteState(
-            data = Data(
-                title = "My first title",
-                description = "To create this note I needed to mark item as failed to rewrite it"
-            )
+        noteState = NoteState.Content(
+            title = "My first title",
+            description = "To create this note I needed to mark item as failed to rewrite it"
         ),
         onTitleChanged = {},
         onDescriptionChanged = {},

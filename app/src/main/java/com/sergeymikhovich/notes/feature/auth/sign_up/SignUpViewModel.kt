@@ -4,10 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.michaelbull.result.onFailure
 import com.github.michaelbull.result.onSuccess
-import com.sergeymikhovich.notes.core.common.error_handling.TypingError
-import com.sergeymikhovich.notes.core.common.error_handling.TypingError.InvalidEmail
-import com.sergeymikhovich.notes.core.common.error_handling.TypingError.InvalidPassword
-import com.sergeymikhovich.notes.core.common.error_handling.TypingError.PasswordsNotMatch
+import com.sergeymikhovich.notes.core.common.error_handling.TypingErrors
 import com.sergeymikhovich.notes.core.common.error_handling.isPasswordConfirmed
 import com.sergeymikhovich.notes.core.common.error_handling.isValidEmail
 import com.sergeymikhovich.notes.core.common.error_handling.isValidPassword
@@ -20,18 +17,41 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-data class Data(
-    val email: String = "",
-    val password: String = "",
-    val confirmPassword: String = "",
-    val typingErrors: Set<TypingError> = setOf(),
+data class SignUpScreenState(
+    val signUpState: SignUpState
 )
 
-data class SignUpUiState(
-    val data: Data = Data(),
-    val error: String = "",
-    val isLoading: Boolean = false
-)
+sealed interface SignUpState {
+    data object Loading: SignUpState
+    data object Error: SignUpState
+    data class Content(
+        val email: String = "",
+        val password: String = "",
+        val confirmPassword: String = "",
+        val userMessage: String = "",
+        val contentState: SignUpContentState = SignUpContentState.Idle
+    ): SignUpState
+}
+
+sealed interface SignUpContentState {
+    val isInvalidEmail: Boolean
+        get() = (this as? Error)?.typingErrors?.isInvalidEmail ?: false
+
+    val isInvalidPassword: Boolean
+        get() = (this as? Error)?.typingErrors?.isInvalidPassword ?: false
+
+    val arePasswordsNotMatch: Boolean
+        get() = (this as? Error)?.typingErrors?.arePasswordsNotMatch ?: false
+
+    val isLoading: Boolean
+        get() = this is Loading
+
+    data object Idle: SignUpContentState
+    data object Loading: SignUpContentState
+    data class Error(
+        val typingErrors: TypingErrors = TypingErrors()
+    ): SignUpContentState
+}
 
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
@@ -39,100 +59,121 @@ class SignUpViewModel @Inject constructor(
     private val router: SignUpRouter
 ): ViewModel(), SignUpRouter by router {
 
-    private val _state = MutableStateFlow(SignUpUiState())
+    private val _state: MutableStateFlow<SignUpScreenState> = MutableStateFlow(
+        SignUpScreenState(SignUpState.Content())
+    )
     val state = _state.asStateFlow()
 
-    private val data: Data
-        get() = _state.value.data
-
     fun updateEmail(newEmail: String) {
-        _state.update {
-            SignUpUiState(
-                data = data.copy(
+        onSignUpContentState {
+            _state.update {
+                it.copy(signUpState = copy(
                     email = newEmail,
-                    typingErrors = getTypingErrorsWithout(InvalidEmail)
-                )
-            )
+                    contentState = onContentErrorOrCreate {
+                        copy(typingErrors = typingErrors.copy(isInvalidEmail = false))
+                    },
+                ))
+            }
         }
     }
 
     fun updatePassword(newPassword: String) {
-        _state.update {
-            SignUpUiState(
-                data = data.copy(
+        onSignUpContentState {
+            _state.update {
+                it.copy(signUpState = copy(
                     password = newPassword,
-                    typingErrors = getTypingErrorsWithout(InvalidPassword)
-                )
-            )
+                    contentState = onContentErrorOrCreate {
+                        copy(typingErrors = typingErrors.copy(isInvalidPassword = false))
+                    }
+                ))
+            }
         }
     }
 
     fun updateConfirmPassword(newConfirmPassword: String) {
-        _state.update {
-            SignUpUiState(
-                data = data.copy(
+        onSignUpContentState {
+            _state.update {
+                it.copy(signUpState = copy(
                     confirmPassword = newConfirmPassword,
-                    typingErrors = getTypingErrorsWithout(PasswordsNotMatch)
-                )
-            )
+                    contentState = onContentErrorOrCreate {
+                        copy(typingErrors = typingErrors.copy(arePasswordsNotMatch = false))
+                    }
+                ))
+            }
         }
-    }
-
-    private fun getTypingErrorsWithout(typingError: TypingError): Set<TypingError> {
-        return data.typingErrors.minusElement(typingError)
-    }
-
-    private fun getTypingErrorsWith(typingError: TypingError): Set<TypingError> {
-        return data.typingErrors.plusElement(typingError)
     }
 
     fun toastShown() {
-        _state.update { SignUpUiState(data = data) }
-    }
-
-    private fun showLoading() {
-        _state.update { it.copy(isLoading = true) }
+        onSignUpContentState {
+            _state.update {
+                it.copy(signUpState = copy(userMessage = ""))
+            }
+        }
     }
 
     fun onSignUpClick() {
-        viewModelScope.launch {
-            val email = data.email
-            val password = data.password
-            val confirmPassword = data.confirmPassword
-
-            if (!email.isValidEmail()) {
-                _state.update {
-                    SignUpUiState(data = data.copy(typingErrors = getTypingErrorsWith(InvalidEmail)))
-                }
-            }
-
-            if (!password.isValidPassword()) {
-                _state.update {
-                    SignUpUiState(data = data.copy(typingErrors = getTypingErrorsWith(InvalidPassword)))
-                }
-            }
-
-            if (!confirmPassword.isPasswordConfirmed(password)) {
-                _state.update {
-                    SignUpUiState(data = data.copy(typingErrors = getTypingErrorsWith(PasswordsNotMatch)))
-                }
-            }
-
-            if (!email.isValidEmail() || !password.isValidPassword() || !confirmPassword.isPasswordConfirmed(password))
-                return@launch
-
-            showLoading()
-
-            accountRepository.createAccountWithEmailAndPassword(data.email, data.password)
-                .onSuccess { toNotes() }
-                .onFailure { error ->
+        onSignUpContentState {
+            viewModelScope.launch {
+                if (!email.isValidEmail()) {
                     _state.update {
-                        SignUpUiState(
-                            data = data,
-                            error = error.message ?: "Ooops...Something went wrong"
-                        )
+                        it.copy(signUpState = copy(
+                            contentState = onContentErrorOrCreate {
+                                copy(typingErrors = typingErrors.copy(isInvalidEmail = true))
+                            },
+                        ))
                     }
                 }
+
+                if (!password.isValidPassword()) {
+                    _state.update {
+                        it.copy(signUpState = copy(
+                            contentState = onContentErrorOrCreate {
+                                copy(typingErrors = typingErrors.copy(isInvalidPassword = true))
+                            },
+                        ))
+                    }
+                }
+
+                if (!confirmPassword.isPasswordConfirmed(password)) {
+                    _state.update {
+                        it.copy(signUpState = copy(
+                            contentState = onContentErrorOrCreate {
+                                copy(typingErrors = typingErrors.copy(arePasswordsNotMatch = true))
+                            },
+                        ))
+                    }
+                }
+
+                if (!email.isValidEmail() ||
+                    !password.isValidPassword() ||
+                    !confirmPassword.isPasswordConfirmed(password)) return@launch
+
+                _state.update {
+                    it.copy(signUpState = SignUpState.Loading)
+                }
+
+                accountRepository.createAccountWithEmailAndPassword(email, password)
+                    .onSuccess { toNotes() }
+                    .onFailure { error ->
+                        _state.update {
+                            it.copy(signUpState = copy(
+                                userMessage = error.message ?: "Oops...Something went wrong")
+                            )
+                        }
+                    }
+            }
         }
     }
+
+    private inline fun onSignUpContentState(block: SignUpState.Content.() -> Unit) =
+        (_state.value.signUpState as? SignUpState.Content)?.let(block)
+
+    private fun onContentErrorOrCreate(
+        block: SignUpContentState.Error.() -> SignUpContentState.Error
+    ) =
+        (_state.value.signUpState as? SignUpState.Content)?.let { content ->
+            (content.contentState as? SignUpContentState.Error)
+        }.let {
+            block(it ?: SignUpContentState.Error(TypingErrors()))
+        }
 }

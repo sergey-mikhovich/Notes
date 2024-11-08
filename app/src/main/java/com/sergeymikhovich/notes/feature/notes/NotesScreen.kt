@@ -75,8 +75,7 @@ fun NavGraphBuilder.composableToNotes() = composableTo(NotesDirection) { NotesSc
 fun NotesScreen(
     viewModel: NotesViewModel = hiltViewModel()
 ) {
-    val state by viewModel.state.collectAsStateWithLifecycle()
-    val user by viewModel.user.collectAsStateWithLifecycle()
+    val screenState by viewModel.state.collectAsStateWithLifecycle()
 
     val permissionState = rememberPermissionState(Manifest.permission.POST_NOTIFICATIONS)
 
@@ -86,8 +85,8 @@ fun NotesScreen(
     }
 
     NotesContent(
-        state = state,
-        user = user,
+        notesState = screenState.notesState,
+        user = screenState.user,
         onCreateNoteClick = viewModel::toCreateNote,
         onAccountCenterClick = viewModel::toAccountCenter,
         onOpenNoteClick = viewModel::toNote,
@@ -97,13 +96,19 @@ fun NotesScreen(
 
 @Composable
 private fun NotesContent(
-    state: NotesState,
+    notesState: NotesState,
     user: User,
     onCreateNoteClick: () -> Unit,
     onAccountCenterClick: () -> Unit,
     onOpenNoteClick: (String) -> Unit,
     onDeleteNoteClick: (String) -> Unit
 ) {
+
+    @Composable
+    fun onNotesContent(block: @Composable (NotesState.Content) -> Unit) {
+        if (notesState is NotesState.Content) block(notesState)
+    }
+
     Scaffold(
         topBar = {
             var active by remember { mutableStateOf(false) }
@@ -111,7 +116,7 @@ private fun NotesContent(
             Column{
                 LinearProgressIndicator(
                     modifier = Modifier.fillMaxWidth().background(Color(0xFFFFFDF0)),
-                    color = if (state.isLoading) Color(0xFFD9614C) else Color(0xFFFFFDF0)
+                    color = if (notesState is NotesState.Loading) Color(0xFFD9614C) else Color(0xFFFFFDF0)
                 )
                 NotesSearchBar(
                     active = active,
@@ -175,38 +180,41 @@ private fun NotesContent(
             }
         },
         floatingActionButton = {
-            if (!state.isEmpty) {
-                FloatingActionButton(
-                    onClick = onCreateNoteClick,
-                    modifier = Modifier.padding(16.dp),
-                    backgroundColor = Color(0xFFD9614C),
-                    shape = RoundedCornerShape(16.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Filled.Add,
-                        contentDescription = "Add",
-                        tint = Color.White
-                    )
+            onNotesContent { content ->
+                if (content.notes.isNotEmpty()) {
+                    FloatingActionButton(
+                        onClick = onCreateNoteClick,
+                        modifier = Modifier.padding(16.dp),
+                        backgroundColor = Color(0xFFD9614C),
+                        shape = RoundedCornerShape(16.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Add,
+                            contentDescription = "Add",
+                            tint = Color.White
+                        )
+                    }
                 }
             }
         }
     ) { paddingValues ->
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(color = Color(0xFFFFFDF0))
-                .padding(paddingValues)
-        ) {
-            if (state.isEmpty) {
-                EmptyNotes(onCreateNoteClick = onCreateNoteClick)
-            } else {
-                Column(modifier = Modifier.fillMaxSize()) {
-                    Notes(
-                        notes = state.notes,
-                        onOpenNoteClick = onOpenNoteClick,
-                        onDeleteNoteClick = onDeleteNoteClick
-                    )
+        onNotesContent { content ->
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(color = Color(0xFFFFFDF0))
+                    .padding(paddingValues)
+            ) {
+                if (content.notes.isEmpty()) {
+                    EmptyNotes(onCreateNoteClick = onCreateNoteClick)
+                } else {
+                    Column(modifier = Modifier.fillMaxSize()) {
+                        Notes(
+                            notes = content.notes,
+                            onOpenNoteClick = onOpenNoteClick,
+                            onDeleteNoteClick = onDeleteNoteClick
+                        )
+                    }
                 }
             }
         }
@@ -219,16 +227,13 @@ fun EmptyNotes(
 ) {
     Column(
         modifier = Modifier
-            .padding(
-                horizontal = 60.dp
-            )
+            .padding(horizontal = 60.dp)
             .fillMaxSize(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Image(
-            modifier = Modifier
-                .size(200.dp),
+            modifier = Modifier.size(200.dp),
             painter = painterResource(id = R.drawable.start_your_jorney),
             contentDescription = ""
         )
@@ -367,7 +372,7 @@ fun NoteCard(
 @Composable
 fun NotesScreenPreview() {
     NotesContent(
-        state = NotesState(
+        notesState = NotesState.Content(
             notes = listOf(
                 Note(
                     userId = "userId",

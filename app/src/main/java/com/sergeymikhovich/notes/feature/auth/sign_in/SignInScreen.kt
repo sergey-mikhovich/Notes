@@ -1,5 +1,6 @@
 package com.sergeymikhovich.notes.feature.auth.sign_in
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -27,8 +28,6 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
 import com.sergeymikhovich.notes.R
-import com.sergeymikhovich.notes.core.common.error_handling.isInvalidEmail
-import com.sergeymikhovich.notes.core.common.error_handling.isInvalidPassword
 import com.sergeymikhovich.notes.core.common.navigation.composableTo
 import com.sergeymikhovich.notes.core.design_system.component.AuthButton
 import com.sergeymikhovich.notes.core.design_system.component.AuthDescriptionText
@@ -47,41 +46,50 @@ fun SignInScreen(
     viewModel: SignInViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val context = LocalContext.current
 
-    LaunchedEffect(state) {
-        if (state.error.isNotBlank()){
-            Toast.makeText(context, state.error, Toast.LENGTH_SHORT).show()
-            viewModel.toastShown()
-        }
+    val signInState = state.signInState
+
+    if (signInState is SignInState.Content) {
+        SignInContent(
+            content = signInState,
+            updateEmail = viewModel::updateEmail,
+            updatePassword = viewModel::updatePassword,
+            onSignInClick = viewModel::onSignInClick,
+            onSignInWithGoogle = viewModel::onSignInWithGoogle,
+            onSignUpClick = viewModel::toSignUp,
+            onToastShown = viewModel::toastShown
+        )
     }
-
-    SignInContent(
-        state = state,
-        updateEmail = viewModel::updateEmail,
-        updatePassword = viewModel::updatePassword,
-        onSignInClick = viewModel::onSignInClick,
-        onSignInWithGoogle = viewModel::onSignInWithGoogle,
-        onSignUpClick = viewModel::toSignUp
-    )
 }
 
 @Composable
 private fun SignInContent(
-    state: SignInUiState,
+    content: SignInState.Content,
     updateEmail: (String) -> Unit,
     updatePassword: (String) -> Unit,
     onSignInClick: () -> Unit,
     onSignInWithGoogle: (Credential) -> Unit,
-    onSignUpClick: () -> Unit
+    onSignUpClick: () -> Unit,
+    onToastShown: () -> Unit
 ) {
+    val context = LocalContext.current
+
     Column(
         modifier = Modifier.fillMaxSize()
     ) {
         LinearProgressIndicator(
             modifier = Modifier.fillMaxWidth().background(Color(0xFFFFFDF0)),
-            color = if (state.isLoading) Color(0xFFD9614C) else Color(0xFFFFFDF0)
+            color = if (content.contentState.isLoading)
+                Color(0xFFD9614C) else Color(0xFFFFFDF0)
         )
+
+        LaunchedEffect(content) {
+            if (content.userMessage.isNotBlank()){
+                Toast.makeText(context, content.userMessage, Toast.LENGTH_SHORT).show()
+                onToastShown()
+            }
+        }
+
         Column(
             modifier = Modifier
                 .background(color = Color(0xFFFFFDF0))
@@ -109,11 +117,11 @@ private fun SignInContent(
                     Spacer(modifier = Modifier.height(12.dp))
 
                     AuthOutLinedTextField(
-                        value = state.data.email,
+                        value = content.email,
                         onValueChange = updateEmail,
                         placeholderText = "sergey.mikhovich@gmail.com",
-                        isError = state.data.typingErrors.isInvalidEmail(),
-                        supportingText = if (state.data.email.isBlank()) "Required field" else "Invalid email"
+                        isError = content.contentState.isInvalidEmail,
+                        supportingText = if (content.email.isBlank()) "Required field" else "Invalid email"
                     )
                 }
 
@@ -124,11 +132,11 @@ private fun SignInContent(
                     Spacer(modifier = Modifier.height(12.dp))
 
                     AuthOutLinedTextField(
-                        value = state.data.password,
+                        value = content.password,
                         onValueChange = updatePassword,
                         placeholderText = "∗∗∗∗∗∗∗∗",
-                        isError = state.data.typingErrors.isInvalidPassword(),
-                        supportingText = if (state.data.password.isBlank()) "Required field" else "Invalid password"
+                        isError = content.contentState.isInvalidPassword,
+                        supportingText = if (content.password.isBlank()) "Required field" else "Invalid password"
                     )
                 }
             }
@@ -165,11 +173,12 @@ private fun SignInContent(
 @Composable
 private fun SignInScreenPreview() {
     SignInContent(
-        state = SignInUiState(),
+        content = SignInState.Content(),
         updateEmail = {},
         updatePassword = {},
         onSignInClick = {},
         onSignInWithGoogle = {},
-        onSignUpClick = {}
+        onSignUpClick = {},
+        onToastShown = {}
     )
 }
