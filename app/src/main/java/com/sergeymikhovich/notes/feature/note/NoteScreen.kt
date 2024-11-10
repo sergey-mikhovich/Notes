@@ -18,9 +18,16 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.rememberDatePickerState
+import androidx.compose.material3.rememberTimePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.TextStyle
@@ -33,8 +40,15 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavGraphBuilder
 import com.sergeymikhovich.notes.core.common.navigation.composableTo
+import com.sergeymikhovich.notes.core.design_system.component.BottomSheetItem
 import com.sergeymikhovich.notes.core.design_system.component.NoteBasicTextField
+import com.sergeymikhovich.notes.core.design_system.component.NoteDatePickerDialog
+import com.sergeymikhovich.notes.core.design_system.component.NoteReminderDialog
+import com.sergeymikhovich.notes.core.design_system.component.NoteTimePickerDialog
+import com.sergeymikhovich.notes.core.design_system.component.RegularBottomSheet
 import com.sergeymikhovich.notes.feature.note.navigation.NoteDirection
+import java.util.Calendar
+import java.util.Date
 
 fun NavGraphBuilder.composeToNote() = composableTo(NoteDirection) { NoteScreen() }
 
@@ -52,19 +66,117 @@ fun NoteScreen(
                 noteState = noteState,
                 onTitleChanged = viewModel::changeTitle,
                 onDescriptionChanged = viewModel::changeDescription,
+                onScheduleNote = viewModel::scheduleNote,
                 onBackClick = viewModel::saveNote
             )
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun NoteContent(
     noteState: NoteState.Content,
     onTitleChanged: (String) -> Unit,
     onDescriptionChanged: (String) -> Unit,
+    onScheduleNote: (Date) -> Unit,
     onBackClick: () -> Unit
 ) {
+    var showReminderDialog by remember { mutableStateOf(false) }
+    val calendarState by remember(showReminderDialog) {
+        mutableStateOf(Calendar.getInstance().apply { add(Calendar.HOUR_OF_DAY, 3) })
+    }
+    var showReminderBottomSheet by remember { mutableStateOf(false) }
+    var showDatePickerDialog by remember { mutableStateOf(false) }
+    var showTimePickerDialog by remember { mutableStateOf(false) }
+
+    if (showTimePickerDialog) {
+        NoteTimePickerDialog(
+            timePickerState = rememberTimePickerState(
+                initialHour = calendarState.get(Calendar.HOUR_OF_DAY),
+                initialMinute = calendarState.get(Calendar.MINUTE)
+            ),
+            onCancel = { showTimePickerDialog = false },
+            onConfirm = { timePickerState ->
+                calendarState.apply {
+                    set(Calendar.HOUR_OF_DAY, timePickerState.hour)
+                    set(Calendar.MINUTE, timePickerState.minute)
+                    set(Calendar.SECOND, 0)
+                }
+                showTimePickerDialog = false
+            }
+        )
+    }
+
+    if (showDatePickerDialog) {
+        NoteDatePickerDialog(
+            datePickerState = rememberDatePickerState(
+                initialSelectedDateMillis = calendarState.timeInMillis
+            ),
+            onDismissButton = { showDatePickerDialog = false },
+            onConfirmButton = { datePickerState ->
+                datePickerState.selectedDateMillis?.let {
+                    val calendar = Calendar.getInstance().apply { timeInMillis = it }
+
+                    calendarState.set(
+                        calendar.get(Calendar.YEAR),
+                        calendar.get(Calendar.MONTH),
+                        calendar.get(Calendar.DAY_OF_MONTH)
+                    )
+                }
+                showDatePickerDialog = false
+            }
+        )
+    }
+
+    if (showReminderDialog) {
+        NoteReminderDialog(
+            calendar = calendarState,
+            onDateClick = { showDatePickerDialog = true },
+            onTimeClick = { showTimePickerDialog = true },
+            onRepeatMode = {},
+            onCancel = { showReminderDialog = false },
+            onConfirm = {
+                onScheduleNote(it.time)
+                showReminderDialog = false
+            }
+        )
+    }
+
+    if (showReminderBottomSheet) {
+        RegularBottomSheet(
+            items = listOf(
+                BottomSheetItem(
+                    leadingIcon = Icons.Outlined.Notifications,
+                    startText = "Later today",
+                    endText = "18:00",
+                    onClick = { showReminderBottomSheet = false }
+                ),
+                BottomSheetItem(
+                    leadingIcon = Icons.Outlined.Notifications,
+                    startText = "Tomorrow morning",
+                    endText = "08:00",
+                    onClick = { showReminderBottomSheet = false }
+                ),
+                BottomSheetItem(
+                    leadingIcon = Icons.Outlined.Notifications,
+                    startText = "Thursday morning",
+                    endText = "Thu 08:00",
+                    onClick = { showReminderBottomSheet = false }
+                ),
+                BottomSheetItem(
+                    leadingIcon = Icons.Outlined.Notifications,
+                    startText = "Pick a date & time",
+                    onClick = {
+                        showReminderBottomSheet = false
+                        showReminderDialog = true
+                    }
+                )
+            ),
+            onDismissRequest = { showReminderBottomSheet = false }
+        )
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -83,7 +195,7 @@ private fun NoteContent(
                 },
                 actions = {
                     IconButton(
-                        onClick = { /*TODO*/ }
+                        onClick = { showReminderBottomSheet = true }
                     ) {
                         Icon(
                             imageVector = Icons.Filled.Notifications,
@@ -169,6 +281,7 @@ fun NotePreview() {
         ),
         onTitleChanged = {},
         onDescriptionChanged = {},
+        onScheduleNote = {},
         onBackClick = {}
     )
 }

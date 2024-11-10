@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.github.michaelbull.result.fold
+import com.github.michaelbull.result.onSuccess
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
 import com.sergeymikhovich.notes.core.data.repository.NoteRepository
@@ -12,10 +13,14 @@ import com.sergeymikhovich.notes.core.model.Note
 import com.sergeymikhovich.notes.core.network.getCurrentUserId
 import com.sergeymikhovich.notes.feature.note.navigation.NoteDirection
 import com.sergeymikhovich.notes.feature.note.navigation.NoteRouter
+import com.sergeymikhovich.notes.reminder.ReminderItem
+import com.sergeymikhovich.notes.reminder.ReminderScheduler
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.Date
 import javax.inject.Inject
 
 data class NoteScreenState(
@@ -35,8 +40,9 @@ class NoteViewModel @Inject constructor(
     private val noteRepository: NoteRepository,
     private val upsertNoteUseCase: UpsertNoteUseCase,
     private val router: NoteRouter,
+    private val reminderScheduler: ReminderScheduler,
     private val savedStateHandle: SavedStateHandle
-): ViewModel(), NoteRouter by router {
+): ViewModel(), NoteRouter by router, ReminderScheduler by reminderScheduler {
 
     private val _state: MutableStateFlow<NoteScreenState> = MutableStateFlow(
         NoteScreenState(NoteState.Content())
@@ -60,6 +66,17 @@ class NoteViewModel @Inject constructor(
         }
     }
 
+    fun scheduleNote(date: Date) {
+        viewModelScope.launch {
+            val noteId = getNoteId() ?: ""
+            noteRepository.getById(noteId).onSuccess { note ->
+                note?.let {
+                    schedule(ReminderItem(date, note))
+                }
+            }
+        }
+    }
+
     private fun getNoteId(): String? {
         return NoteDirection.getNoteId(savedStateHandle)
     }
@@ -78,7 +95,7 @@ class NoteViewModel @Inject constructor(
 
     fun saveNote() {
         onSaveContentState {
-            viewModelScope.launch {
+            viewModelScope.launch(Dispatchers.IO) {
                 val noteId = getNoteId() ?: ""
 
                 val note = if (noteId.isNotBlank()) {

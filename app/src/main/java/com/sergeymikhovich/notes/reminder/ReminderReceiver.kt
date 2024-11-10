@@ -26,8 +26,10 @@ class ReminderReceiver: BroadcastReceiver() {
             ReminderReceiverEntryPoint::class.java
         )
         val notifier = entryPoint.getNotifier()
-        val note = IntentCompat.getParcelableExtra(intent, REMINDER_MESSAGE, Note::class.java) ?: return
-        notifier.postNotifications(listOf(note))
+
+        IntentCompat.getParcelableExtra(intent, REMINDER_MESSAGE, Note::class.java)?.let { note ->
+            notifier.postNotifications(listOf(note))
+        }
     }
 
     companion object {
